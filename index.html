@@ -149,7 +149,7 @@
                 <button onclick="app.switchView('tech-home')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Cancelar</button>
             </div>
 
-            <form id="tech-form" onsubmit="app.submitTechForm(event)" class="space-y-6">
+            <form id="tech-form" onsubmit="window.enviarMantenimiento(event)" class="space-y-6">
                 <input type="hidden" id="tf-eq-id">
                 
                 <!-- Información del Equipo (FIJA/HEADER) -->
@@ -646,7 +646,18 @@
     </div>
 
     <!-- Scripts -->
-    <script>
+  <script type="module">
+    // Importamos la librería de Supabase desde una fuente rápida (CDN)
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    // Configuración con tus credenciales reales de las imágenes
+    const SUPABASE_URL = 'https://fdpravuvrwcgozbdhuua.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfS...'; // PEGA AQUÍ TU LLAVE "PUBLISHABLE" COMPLETA
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Hacemos que supabase sea accesible para el resto del código
+    window.supabase = supabase;
+
         lucide.createIcons();
 
         // Componentes para la bitácora
@@ -1394,17 +1405,63 @@
                 }
             },
 
-            submitTechForm: function(e) {
-                e.preventDefault();
-                const eqId = parseInt(document.getElementById('tf-eq-id').value);
-                const eq = appDB.equipments.find(e => e.id === eqId);
-                const now = new Date();
-                const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+           // Nueva función para enviar a la nube de Bisonte
+    window.enviarMantenimiento = async (e) => {
+        e.preventDefault();
+        app.showToast("Sincronizando con Bisonte Cloud...", "info");
 
-                const getImg = (id) => {
-                    const img = document.getElementById(id);
-                    return img.classList.contains('hidden') ? null : img.src;
-                };
+        try {
+            const fotosIds = ['before', 'during', 'after'];
+            const urls = { before: null, during: null, after: null };
+
+            // 1. SUBIR FOTOS AL STORAGE
+            for (const id of fotosIds) {
+                const imgElement = document.getElementById(`img-preview-${id}`);
+                // Solo subimos si el técnico tomó la foto (si no está oculta)
+                if (imgElement && !imgElement.classList.contains('hidden')) {
+                    const blob = await fetch(imgElement.src).then(res => res.blob());
+                    const fileName = `hvac-${Date.now()}-${id}.jpg`;
+
+                    const { error: uploadError } = await window.supabase.storage
+                        .from('evidencias')
+                        .upload(fileName, blob);
+
+                    if (uploadError) throw uploadError;
+
+                    // Obtenemos el link público de la foto
+                    const { data } = window.supabase.storage.from('evidencias').getPublicUrl(fileName);
+                    urls[id] = data.publicUrl;
+                }
+            }
+
+            // 2. GUARDAR DATOS EN LA TABLA SQL
+            const { error: dbError } = await window.supabase
+                .from('bitacoras')
+                .insert([{
+                    eq_id: document.getElementById('tf-display-id').textContent,
+                    tech_name: app.currentUser.displayName,
+                    volts: parseFloat(document.getElementById('tf-volts').value) || 0,
+                    amps: parseFloat(document.getElementById('tf-amps').value) || 0,
+                    psi: parseFloat(document.getElementById('tf-psi').value) || 0,
+                    temp: parseFloat(document.getElementById('tf-temp').value) || 0,
+                    tech_comments: document.getElementById('tf-tech-comments').value,
+                    foto_before: urls.before,
+                    foto_during: urls.during,
+                    foto_after: urls.after,
+                    needs_corrective: document.getElementById('tf-needs-corrective').checked,
+                    corrective_details: document.getElementById('tf-corrective-details').value
+                }]);
+
+            if (dbError) throw dbError;
+
+            app.showToast("¡Registro exitoso en la nube!", "success");
+            app.switchView('tech-home');
+
+        } catch (err) {
+            console.error(err);
+            app.showToast("Error de conexión: " + err.message, "error");
+        }
+    };
 
                 const logEntry = {
                     id: Date.now(),
@@ -1688,4 +1745,5 @@
         document.addEventListener('DOMContentLoaded', () => { app.init(); });
     </script>
 </body>
+
 </html>
