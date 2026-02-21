@@ -61,7 +61,7 @@
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto relative bg-slate-100">
-
+        
         <!-- ======================= 1. LOGIN ======================= -->
         <div id="view-login" class="min-h-full flex items-center justify-center p-4 fade-in no-print">
             <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
@@ -666,129 +666,125 @@
     window.logout = () => app.logout();
     window.switchView = (view) => app.switchView(view);
 
-        const app = {
-            currentUser: null,
-            views: ['login', 'tech-home', 'tech-form', 'client', 'users', 'clients-admin'],
-            currentSelectedClientId: null,
-            confirmCallback: null,
+const app = {
+        currentUser: null,
+        views: ['login', 'tech-home', 'tech-form', 'client', 'users', 'clients-admin'],
+        currentSelectedClientId: null,
+        confirmCallback: null,
 
-            loadDB: function() {
-                const stored = localStorage.getItem('bisonte_hvac_db');
-                if (stored) {
-                    try {
-                        const parsed = JSON.parse(stored);
-                        appDB.users = parsed.users || appDB.users;
-                        appDB.clients = parsed.clients || appDB.clients;
-                        appDB.services = parsed.services || appDB.services;
-                        appDB.equipments = parsed.equipments || appDB.equipments;
-                        appDB.logs = parsed.logs || appDB.logs;
-                        
-                        appDB.users.forEach(u => {
-                            if (!u.password) {
-                                if (u.email === 'israelrbolanos@bisonteingenieria.com') u.password = 'ramirezbolanos1';
-                                else u.password = '123';
-                            }
-                        });
-                    } catch (e) { console.error("DB Load Error", e); }
-                }
-            },
-
-            saveDB: function() {
+        loadDB: function() {
+            const stored = localStorage.getItem('bisonte_hvac_db');
+            if (stored) {
                 try {
-                    localStorage.setItem('bisonte_hvac_db', JSON.stringify(appDB));
-                } catch (e) {
-                    console.error("DB Save Error", e);
-                    this.showToast("Memoria llena. Intente borrar historial antiguo.", "error");
-                }
-            },
+                    const parsed = JSON.parse(stored);
+                    appDB.users = parsed.users || appDB.users;
+                    appDB.clients = parsed.clients || appDB.clients;
+                    appDB.services = parsed.services || appDB.services;
+                    appDB.equipments = parsed.equipments || appDB.equipments;
+                    appDB.logs = parsed.logs || appDB.logs;
+                } catch (e) { console.error("DB Load Error", e); }
+            }
+        },
 
-            init: function() {
-                this.loadDB();
-                this.renderComponentsTable();
-                this.renderUsersTable();
-                this.renderClientsSelectors();
-            },
+        saveDB: function() {
+            try {
+                localStorage.setItem('bisonte_hvac_db', JSON.stringify(appDB));
+            } catch (e) {
+                console.error("DB Save Error", e);
+                this.showToast("Memoria llena. Intente borrar historial antiguo.", "error");
+            }
+        },
 
-            // --- NAVEGACIÓN Y LOGIN ---
-            window.handleLogin: function(e) {
-                e.preventDefault();
-                const emailInput = document.getElementById('login-email').value.toLowerCase();
-                const passwordInput = document.getElementById('login-password').value;
+        init: function() {
+            this.loadDB();
+            this.renderComponentsTable();
+            this.renderUsersTable();
+            this.renderClientsSelectors();
+        },
+
+        // --- NAVEGACIÓN Y LOGIN ---
+        handleLogin: function(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('login-email').value.toLowerCase();
+            const passwordInput = document.getElementById('login-password').value;
+            
+            const userFound = appDB.users.find(u => u.email.toLowerCase() === emailInput && u.password === passwordInput);
+            
+            if (userFound) {
+                this.currentUser = { ...userFound, displayName: userFound.name };
+                document.getElementById('user-display-name').textContent = userFound.name;
+                document.getElementById('user-display-role').textContent = `Rol: ${userFound.role}`;
                 
-                const userFound = appDB.users.find(u => u.email.toLowerCase() === emailInput && u.password === passwordInput);
+                this.updateNavigation();
                 
-                if (userFound) {
-                    if (userFound.role === 'cliente') {
-                        const clientExists = appDB.clients.find(c => c.id == userFound.clientId);
-                        if (!clientExists) {
-                            this.showToast('Esta cuenta de cliente no tiene una empresa asignada válida.', 'error');
-                            return;
-                        }
-                    }
-
-                    this.currentUser = { ...userFound, displayName: userFound.name };
-                    document.getElementById('user-display-name').textContent = userFound.name;
-                    document.getElementById('user-display-role').textContent = `Rol: ${userFound.role}`;
-                    
-                    this.updateNavigation();
-                    
-                    if(userFound.role === 'admin') this.switchView('clients-admin');
-                    else if (userFound.role === 'tecnico') this.switchView('tech-home');
-                    else {
-                        this.currentSelectedClientId = userFound.clientId;
-                        this.loadClientDashboard(userFound.clientId);
-                        this.switchView('client');
-                    }
-                    this.showToast(`Bienvenido, ${userFound.name}`, 'success');
-                    document.getElementById('login-form').reset();
-                } else {
-                    this.showToast('Correo o contraseña incorrectos.', 'error');
+                if(userFound.role === 'admin') this.switchView('clients-admin');
+                else if (userFound.role === 'tecnico') this.switchView('tech-home');
+                else {
+                    this.currentSelectedClientId = userFound.clientId;
+                    this.loadClientDashboard(userFound.clientId);
+                    this.switchView('client');
                 }
-            },
+                this.showToast(`Bienvenido, ${userFound.name}`, 'success');
+            } else {
+                this.showToast('Correo o contraseña incorrectos.', 'error');
+            }
+        },
 
-            logout: function() {
-                this.currentUser = null;
-                this.switchView('login');
-            },
+        logout: function() {
+            this.currentUser = null;
+            this.switchView('login');
+        },
 
-            updateNavigation: function() {
-                const navLinksDesktop = document.getElementById('nav-links');
-                const role = this.currentUser.role;
-                let html = '';
-                if (role === 'admin') {
-                    html += this.createNavLink('Clientes y Agenda', 'clients-admin', 'building-2');
-                    html += this.createNavLink('Panel Técnico', 'tech-home', 'wrench');
-                    html += this.createNavLink('Usuarios', 'users', 'users');
-                } else if (role === 'tecnico') {
-                    html += this.createNavLink('Panel Técnico', 'tech-home', 'wrench');
-                } else if (role === 'cliente') {
-                    html += this.createNavLink('Mi Panel', 'client', 'layout-dashboard');
-                }
-                
-                navLinksDesktop.innerHTML = html;
-                document.getElementById('mobile-nav-links').innerHTML = html;
-                lucide.createIcons();
-            },
+        updateNavigation: function() {
+            const navLinksDesktop = document.getElementById('nav-links');
+            const role = this.currentUser.role;
+            let html = '';
+            if (role === 'admin') {
+                html += this.createNavLink('Clientes y Agenda', 'clients-admin', 'building-2');
+                html += this.createNavLink('Panel Técnico', 'tech-home', 'wrench');
+                html += this.createNavLink('Usuarios', 'users', 'users');
+            } else if (role === 'tecnico') {
+                html += this.createNavLink('Panel Técnico', 'tech-home', 'wrench');
+            } else if (role === 'cliente') {
+                html += this.createNavLink('Mi Panel', 'client', 'layout-dashboard');
+            }
+            navLinksDesktop.innerHTML = html;
+            document.getElementById('mobile-nav-links').innerHTML = html;
+            lucide.createIcons();
+        },
 
-            createNavLink: function(text, target, icon) {
-                return `<button onclick="app.switchView('${target}')" class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-blue-100 hover:bg-blue-800"><i data-lucide="${icon}" class="w-4 h-4"></i> ${text}</button>`;
-            },
+        createNavLink: function(text, target, icon) {
+            return `<button onclick="window.switchView('${target}')" class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-blue-100 hover:bg-blue-800"><i data-lucide="${icon}" class="w-4 h-4"></i> ${text}</button>`;
+        },
 
-            switchView: function(viewId) {
-                // Control estricto de vistas para que técnicos y clientes no naveguen copiando URLs.
-                if (this.currentUser && this.currentUser.role === 'tecnico' && viewId !== 'tech-home' && viewId !== 'tech-form' && viewId !== 'login') {
-                    return this.showToast('No tiene permisos para ver esta sección.', 'error');
-                }
-                if (this.currentUser && this.currentUser.role === 'cliente' && viewId !== 'client' && viewId !== 'login') {
-                    return this.showToast('No tiene permisos para ver esta sección.', 'error');
-                }
+        switchView: function(viewId) {
+            this.views.forEach(v => document.getElementById(`view-${v}`).classList.add('hidden-view'));
+            document.getElementById(`view-${viewId}`).classList.remove('hidden-view');
+            if (viewId === 'login') { document.getElementById('navbar').classList.add('hidden-view'); } 
+            else { document.getElementById('navbar').classList.remove('hidden-view'); }
+            window.scrollTo(0,0);
+        },
 
-                this.views.forEach(v => document.getElementById(`view-${v}`).classList.add('hidden-view'));
-                document.getElementById(`view-${viewId}`).classList.remove('hidden-view');
-                if (viewId === 'login') { document.getElementById('navbar').classList.add('hidden-view'); } 
-                else { document.getElementById('navbar').classList.remove('hidden-view'); }
-                window.scrollTo(0,0);
-            },
+        // ... el resto de tus funciones (render, print, etc) deben ir aquí sin "window." delante ...
+        showToast: function(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 fade-in text-sm font-medium ${type === 'success' ? 'bg-green-600' : (type === 'error' ? 'bg-red-600' : 'bg-blue-600')}`;
+            toast.innerHTML = `<i data-lucide="info" class="w-5 h-5"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            lucide.createIcons({root: toast});
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+    };
+
+    // INICIALIZACIÓN Y EXPOSICIÓN GLOBAL (Al final del script)
+    document.addEventListener('DOMContentLoaded', () => { app.init(); });
+
+    window.handleLogin = (e) => app.handleLogin(e);
+    window.logout = () => app.logout();
+    window.switchView = (view) => app.switchView(view);
+    window.selectTechClient = () => app.selectTechClient();
+    window.enviarMantenimiento = (e) => enviarMantenimiento(e); // Si tienes la función de Supabase fuera
 
             // --- SISTEMA DE CONFIRMACIÓN ---
             openConfirmModal: function(message, callback) {
@@ -1415,9 +1411,7 @@
             }
 
             // 2. GUARDAR DATOS EN LA TABLA SQL
-            const { error: dbError } = await window.supabase
-                .from('bitacoras')
-                .insert([{
+            const { error: dbError } = await window.supabase.from('bitacoras').insert([{
                     eq_id: document.getElementById('tf-display-id').textContent,
                     tech_name: app.currentUser.displayName,
                     volts: parseFloat(document.getElementById('tf-volts').value) || 0,
@@ -1731,6 +1725,7 @@ window.switchView = (view) => app.switchView(view);
 </body>
 
 </html>
+
 
 
 
