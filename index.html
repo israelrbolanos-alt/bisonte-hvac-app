@@ -149,7 +149,7 @@
                 <button onclick="app.switchView('tech-home')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Cancelar</button>
             </div>
 
-            <form id="tech-form" onsubmit="window.enviarMantenimiento(event)" class="space-y-6">
+            <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-6">
                 <input type="hidden" id="tf-eq-id">
                 
                 <!-- Información del Equipo (FIJA/HEADER) -->
@@ -652,7 +652,7 @@
 
     // Configuración con tus credenciales reales de las imágenes
     const SUPABASE_URL = 'https://fdpravuvrwcgozbdhuua.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfS...'; // PEGA AQUÍ TU LLAVE "PUBLISHABLE" COMPLETA
+    const SUPABASE_KEY = sb_secret_9z2r5rkOgzm-SV5ErVEWnQ_WgLpq39W
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // Hacemos que supabase sea accesible para el resto del código
@@ -728,7 +728,7 @@
             },
 
             // --- NAVEGACIÓN Y LOGIN ---
-            handleLogin: function(e) {
+            window.handleLogin: function(e) {
                 e.preventDefault();
                 const emailInput = document.getElementById('login-email').value.toLowerCase();
                 const passwordInput = document.getElementById('login-password').value;
@@ -1747,3 +1747,4 @@
 </body>
 
 </html>
+
