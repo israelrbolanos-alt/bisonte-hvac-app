@@ -323,7 +323,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm self-start">
                     <h3 class="font-bold text-slate-800 mb-4 border-b pb-2">Registrar Usuario</h3>
-                    <form onsubmit="app.addUser(event)" class="space-y-4">
+                    <form onsubmit="window.addUser(event)" class="space-y-4">
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="new-user-name" required class="w-full border rounded p-2 text-sm"></div>
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo (Login)</label><input type="email" id="new-user-email" required class="w-full border rounded p-2 text-sm"></div>
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Contraseña</label><input type="password" id="new-user-password" required class="w-full border rounded p-2 text-sm"></div>
@@ -465,7 +465,7 @@
                     <h3 class="font-bold">Editar Usuario</h3>
                     <button type="button" onclick="document.getElementById('modal-edit-user').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button>
                 </div>
-                <form onsubmit="app.saveEditUser(event)" class="p-6 space-y-4">
+                <form onsubmit="window.saveEditUser(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-u-id">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="edit-u-name" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo (Login)</label><input type="email" id="edit-u-email" required class="w-full border rounded p-2 text-sm"></div>
@@ -494,7 +494,7 @@
         <div id="modal-add-client" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Cliente</h3><button type="button" onclick="document.getElementById('modal-add-client').classList.add('hidden')" class="p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <form onsubmit="app.addClient(event)" class="p-6 space-y-4">
+                <form onsubmit="window.addClient(event)" class="p-6 space-y-4">
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label><input type="text" id="add-c-name" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Dirección</label><input type="text" id="add-c-address" required class="w-full border rounded p-2"></div>
                     <div class="grid grid-cols-2 gap-4">
@@ -513,7 +513,7 @@
         <div id="modal-edit-client" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Cliente</h3><button type="button" onclick="document.getElementById('modal-edit-client').classList.add('hidden')" class="p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <form onsubmit="app.saveEditClient(event)" class="p-6 space-y-4">
+                <form onsubmit="window.saveEditClient(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-c-id">
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label><input type="text" id="edit-c-name" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Dirección</label><input type="text" id="edit-c-address" required class="w-full border rounded p-2"></div>
@@ -533,7 +533,7 @@
         <div id="modal-add-eq" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Equipo (Ficha Técnica)</h3><button type="button" onclick="document.getElementById('modal-add-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
+                <form onsubmit="window.saveEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="add-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="add-eq-key" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Tipo</label><select id="add-eq-type" required class="w-full border rounded p-2 text-sm bg-white"><option value="">Seleccione...</option><option>Minisplit</option><option>Paquete / RoofTop</option><option>Dividido</option><option>Chiller</option></select></div>
@@ -560,7 +560,7 @@
         <div id="modal-edit-eq" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Ficha del Equipo</h3><button type="button" onclick="document.getElementById('modal-edit-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveEditEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
+                <form onsubmit="window.saveEditEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
                     <input type="hidden" id="edit-eq-id">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="edit-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="edit-eq-key" required class="w-full border rounded p-2 text-sm"></div>
@@ -588,7 +588,7 @@
         <div id="modal-schedule-service" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Agendar Servicio</h3><button type="button" onclick="document.getElementById('modal-schedule-service').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveScheduledService(event)" class="p-6 space-y-4">
+                <form onsubmit="window.saveScheduledService(event)" class="p-6 space-y-4">
                     <input type="hidden" id="schedule-eq-id">
                     <div><label class="block text-sm font-medium mb-1">Fecha</label><input type="date" id="schedule-date" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium mb-1">Notas / Motivo</label><textarea id="schedule-notes" class="w-full border rounded p-2" rows="2"></textarea></div>
@@ -604,7 +604,7 @@
         <div id="modal-edit-service" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Cita Programada</h3><button type="button" onclick="document.getElementById('modal-edit-service').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveEditService(event)" class="p-6 space-y-4">
+                <form onsubmit="window.saveEditService(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-s-id">
                     <div><label class="block text-sm font-medium mb-1">Fecha</label><input type="date" id="edit-s-date" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium mb-1">Notas</label><textarea id="edit-s-notes" class="w-full border rounded p-2" rows="2"></textarea></div>
@@ -1404,9 +1404,7 @@
                     const blob = await fetch(imgElement.src).then(res => res.blob());
                     const fileName = `hvac-${Date.now()}-${id}.jpg`;
 
-                    const { error: uploadError } = await window.supabase.storage
-                        .from('evidencias')
-                        .upload(fileName, blob);
+                    const { error: uploadError } = await window.supabase.storage.from('evidencias').upload(fileName, blob);
 
                     if (uploadError) throw uploadError;
 
@@ -1725,9 +1723,14 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => { app.init(); });
+  // Esto hace que los botones del HTML puedan ver las funciones del script
+window.handleLogin = (e) => app.handleLogin(e);
+window.logout = () => app.logout();
+window.switchView = (view) => app.switchView(view);  
     </script>
 </body>
 
 </html>
+
 
 
