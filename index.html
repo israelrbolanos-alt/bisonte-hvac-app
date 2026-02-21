@@ -73,7 +73,7 @@
                     <p class="text-slate-500 text-sm mt-1">Portal de Gestión HVAC</p>
                 </div>
                 
-                <form id="login-form" onsubmit="app.handleLogin(event)" class="space-y-5">
+                <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Correo Electrónico</label>
                         <div class="relative">
@@ -646,43 +646,25 @@
     </div>
 
     <!-- Scripts -->
-  <script type="module">
-    // Importamos la librería de Supabase desde una fuente rápida (CDN)
+<script type="module">
+    // 1. Importar Supabase
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    // Configuración con tus credenciales reales de las imágenes
+    // 2. Configuración (Tus llaves reales)
     const SUPABASE_URL = 'https://fdpravuvrwcgozbdhuua.supabase.co';
-    const SUPABASE_KEY = sb_secret_9z2r5rkOgzm-SV5ErVEWnQ_WgLpq39W
+    const SUPABASE_KEY = 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSP8pTzH_V5XvFmGf_O'; // Llave completa
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Hacemos que supabase sea accesible para el resto del código
+    // 3. Hacer que Supabase sea global para que no de error
     window.supabase = supabase;
 
-        lucide.createIcons();
-
-        // Componentes para la bitácora
-        const hvacComponents = ["Serpentín Evaporador", "Serpentín Condensador", "Filtros de Aire", "Turbina / Ventilador", "Motor Condensadora", "Compresor", "Tarjeta PCB", "Capacitores", "Charola / Drenaje", "Aislamiento"];
-
-        // BASE DE DATOS LOCAL
-        const appDB = {
-            users: [
-                { id: 'u1', name: 'Israel Ramirez Bolaños', email: 'israelrbolanos@bisonteingenieria.com', password: 'ramirezbolanos1', role: 'admin' },
-                { id: 'u2', name: 'Técnico Juan', email: 'juan@tecnico.com', password: '123', role: 'tecnico' },
-                { id: 'u3', name: 'Admin Torre XYZ', email: 'hotel@cliente.com', password: '123', role: 'cliente', clientId: 1 }
-            ],
-            clients: [
-                { id: 1, name: 'Torre Corporativa XYZ', address: 'Av. Reforma 123, CDMX', startDate: '2025-11-15', frequency: 'Trimestral' }
-            ],
-            services: [
-                { id: 1, clientId: 1, eqId: null, date: '2025-11-15', notes: 'Servicio Inicial', status: 'completed', reminderSent: true },
-                { id: 2, clientId: 1, eqId: null, date: '2026-02-15', notes: 'Q1 Mantenimiento', status: 'pending', reminderSent: false }
-            ],
-            equipments: [
-                { id: 101, clientId: 1, unitId: 'AC-01', key: 'TR-01', type: 'Minisplit', brand: 'Trane', location: 'Recepción', capacity: '3 TR', gas: 'R-410A', itm: '30', polos: '2', status: 'Operativo', lastPreventiveDate: '2025-11-15', correctiveDetails: null },
-                { id: 102, clientId: 1, unitId: 'AC-02', key: 'TR-02', type: 'Minisplit', brand: 'Trane', location: 'Sala Juntas', capacity: '5 TR', gas: 'R-410A', itm: '40', polos: '2', status: 'Operativo', lastPreventiveDate: null, correctiveDetails: null }
-            ],
-            logs: []
-        };
+    // 4. CORRECCIÓN VITAL PARA EL LOGIN
+    // Buscamos donde empieza el objeto "const app = { ... }"
+    // y justo DESPUÉS de que se defina ese objeto, añade estas líneas:
+    
+    window.handleLogin = (e) => app.handleLogin(e);
+    window.logout = () => app.logout();
+    window.switchView = (view) => app.switchView(view);
 
         const app = {
             currentUser: null,
@@ -1747,4 +1729,5 @@
 </body>
 
 </html>
+
 
