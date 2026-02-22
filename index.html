@@ -31,10 +31,8 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
 
-    <!-- Toast Notifications -->
     <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 no-print"></div>
 
-    <!-- Top Navigation -->
     <nav id="navbar" class="bg-blue-900 text-white shadow-md hidden-view z-10 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
@@ -42,7 +40,6 @@
                     <i data-lucide="fan" class="text-blue-400"></i>
                     <span class="font-bold text-xl tracking-wide">Bisonte<span class="font-light">HVAC</span></span>
                 </div>
-                <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-2 lg:space-x-4" id="nav-links"></div>
                 <div class="flex items-center gap-4">
                     <div class="text-sm text-right hidden sm:block">
@@ -55,14 +52,11 @@
                 </div>
             </div>
         </div>
-        <!-- Mobile Menu -->
         <div class="md:hidden bg-blue-800 px-4 py-2 flex gap-2 overflow-x-auto" id="mobile-nav-links"></div>
     </nav>
 
-    <!-- Main Content -->
     <main class="flex-1 overflow-y-auto relative bg-slate-100">
         
-        <!-- ======================= 1. LOGIN ======================= -->
         <div id="view-login" class="min-h-full flex items-center justify-center p-4 fade-in no-print">
             <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
                 <div class="text-center mb-8">
@@ -73,20 +67,21 @@
                     <p class="text-slate-500 text-sm mt-1">Portal de Gestión HVAC</p>
                 </div>
                 
-                <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-5">
+                <form id="login-form" onsubmit="app.handleLogin(event)" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Correo Electrónico</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Correo Electrónico Autorizado</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i data-lucide="mail" class="w-5 h-5 text-slate-400"></i></div>
                             <input type="email" id="login-email" required class="pl-10 w-full rounded-lg border-slate-300 border p-2.5 focus:ring-blue-500" placeholder="ejemplo@bisonteingenieria.com">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">PIN de Acceso (Empresa)</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i data-lucide="lock" class="w-5 h-5 text-slate-400"></i></div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i data-lucide="key" class="w-5 h-5 text-slate-400"></i></div>
                             <input type="password" id="login-password" required class="pl-10 w-full rounded-lg border-slate-300 border p-2.5 focus:ring-blue-500" placeholder="••••••••">
                         </div>
+                        <p class="text-[10px] text-slate-400 mt-1">Ingrese el código maestro proporcionado por administración.</p>
                     </div>
                     <button type="submit" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
                         <span>Ingresar al Sistema</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -95,7 +90,6 @@
             </div>
         </div>
 
-        <!-- ======================= 2A. PANEL TÉCNICO ======================= -->
         <div id="view-tech-home" class="hidden-view p-4 md:p-8 max-w-6xl mx-auto fade-in pb-24 no-print">
             <div class="mb-6 flex justify-between items-end">
                 <div>
@@ -105,7 +99,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- Selector Cliente -->
                 <div class="lg:col-span-1 space-y-4">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Cliente Asignado</label>
@@ -116,7 +109,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Lista Equipos -->
                 <div class="lg:col-span-3">
                     <div id="tech-equipment-panel" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hidden">
                         <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
@@ -139,7 +131,6 @@
             </div>
         </div>
 
-        <!-- ======================= 2B. FORMULARIO BITÁCORA (SNAPSHOT) ======================= -->
         <div id="view-tech-form" class="hidden-view p-4 md:p-8 max-w-5xl mx-auto fade-in pb-24 no-print">
             <div class="mb-6 flex items-center justify-between">
                 <div>
@@ -149,10 +140,9 @@
                 <button onclick="app.switchView('tech-home')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Cancelar</button>
             </div>
 
-            <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-6">
+            <form id="tech-form" onsubmit="app.submitTechForm(event)" class="space-y-6">
                 <input type="hidden" id="tf-eq-id">
                 
-                <!-- Información del Equipo (FIJA/HEADER) -->
                 <div class="bg-blue-900 text-white rounded-xl shadow-md overflow-hidden relative">
                     <div class="absolute top-4 right-4 opacity-20"><i data-lucide="cpu" class="w-16 h-16"></i></div>
                     <div class="p-6 relative z-10">
@@ -175,7 +165,6 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN: Fotografías de Evidencia ACTUALIZADA -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="bg-slate-50 border-b border-slate-200 px-6 py-3 font-semibold text-slate-700 flex items-center gap-2">
                         <i data-lucide="camera" class="w-4 h-4"></i> Evidencia Fotográfica (Opcional)
@@ -214,7 +203,6 @@
                     </div>
                 </div>
 
-                <!-- Parámetros de Operación Físicos (Captura) -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="bg-slate-50 border-b border-slate-200 px-6 py-3 font-semibold text-slate-700 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4"></i> Medición de Parámetros Dinámicos</div>
                     <div class="p-4 sm:p-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -225,24 +213,21 @@
                     </div>
                 </div>
 
-                <!-- Estado de Componentes -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="bg-slate-50 border-b border-slate-200 px-6 py-3 font-semibold text-slate-700 flex items-center gap-2"><i data-lucide="check-square" class="w-4 h-4"></i> Estado Físico de Componentes</div>
                     <div class="p-0 overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="bg-slate-50 text-slate-500 border-b"><tr><th class="px-4 py-3">Componente</th><th class="px-4 py-3 w-40">Estado</th><th class="px-4 py-3">Observaciones / Limpieza</th></tr></thead>
                             <tbody class="divide-y divide-slate-100" id="components-list">
-                                <!-- Generado por JS -->
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Comentarios del Técnico y Mantenimiento Correctivo -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-6 space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2"><i data-lucide="message-square" class="w-4 h-4 inline mr-1 text-blue-600"></i> Comentarios Generales del Técnico</label>
-                        <textarea id="tf-tech-comments" rows="2" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-blue-500 bg-slate-50" placeholder="Escriba observaciones sobre el funcionamiento, el servicio realizado, recomendaciones generales, etc..."></textarea>
+                        <textarea id="tf-tech-comments" rows="2" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-blue-500 bg-slate-50" placeholder="Escriba observaciones sobre el funcionamiento, el servicio realizado, recomendaciones generales..."></textarea>
                     </div>
                     
                     <div class="p-4 bg-red-50 border border-red-200 rounded-lg mt-4 transition-all">
@@ -250,19 +235,18 @@
                             <input type="checkbox" id="tf-needs-corrective" class="w-5 h-5 text-red-600 rounded border-red-300 focus:ring-red-500" onchange="document.getElementById('tf-corrective-details').classList.toggle('hidden')">
                             <span class="text-sm">¿Se detectó una Falla que requiera Mantenimiento Correctivo?</span>
                         </label>
-                        <textarea id="tf-corrective-details" rows="2" class="hidden w-full border border-red-300 rounded-lg p-3 text-sm focus:ring-red-500 mt-3 bg-white shadow-sm" placeholder="Describa a detalle la falla y las refacciones exactas necesarias para solucionarlo..."></textarea>
+                        <textarea id="tf-corrective-details" rows="2" class="hidden w-full border border-red-300 rounded-lg p-3 text-sm focus:ring-red-500 mt-3 bg-white shadow-sm" placeholder="Describa a detalle la falla y las refacciones exactas necesarias..."></textarea>
                     </div>
                 </div>
 
                 <div class="flex justify-end pt-2 pb-6">
                     <button type="submit" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-md transition-colors flex justify-center items-center gap-2 text-lg">
-                        <i data-lucide="save" class="w-6 h-6"></i> Guardar Bitácora en Historial
+                        <i data-lucide="save" class="w-6 h-6"></i> Guardar Bitácora en la Nube
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- ======================= 3. VISTA CLIENTE (DASHBOARD) ======================= -->
         <div id="view-client" class="hidden-view p-4 md:p-8 max-w-6xl mx-auto fade-in pb-24 no-print">
             <div class="mb-6 flex justify-between items-end border-b pb-4">
                 <div>
@@ -275,7 +259,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Columna Izquierda: Agenda -->
                 <div class="lg:col-span-1 space-y-6">
                     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                         <div class="bg-blue-900 text-white px-4 py-3 font-semibold flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> Fechas Programadas</div>
@@ -283,9 +266,7 @@
                     </div>
                 </div>
                 
-                <!-- Columna Derecha: Equipos y Reportes -->
                 <div class="lg:col-span-2 space-y-6">
-                    <!-- Equipos -->
                     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                         <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 font-semibold text-slate-700 flex items-center gap-2"><i data-lucide="server" class="w-4 h-4"></i> Estado de mis Equipos</div>
                         <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
@@ -298,7 +279,6 @@
                         </div>
                     </div>
 
-                    <!-- Historial Bitácoras -->
                     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                         <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 font-semibold text-slate-700 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4"></i> Historial de Bitácoras</div>
                         <div class="overflow-x-auto">
@@ -314,19 +294,17 @@
             </div>
         </div>
 
-        <!-- ======================= 4. ADMIN: USUARIOS ======================= -->
         <div id="view-users" class="hidden-view p-4 md:p-8 max-w-5xl mx-auto fade-in pb-24 no-print">
             <div class="mb-6">
                 <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="users" class="text-blue-600"></i> Gestión de Usuarios</h2>
-                <p class="text-slate-500">Crea y administra accesos al sistema.</p>
+                <p class="text-slate-500">Crea y administra accesos al sistema. (Autenticación sin contraseña habilitada)</p>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm self-start">
                     <h3 class="font-bold text-slate-800 mb-4 border-b pb-2">Registrar Usuario</h3>
-                    <form onsubmit="window.addUser(event)" class="space-y-4">
+                    <form onsubmit="app.addUser(event)" class="space-y-4">
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="new-user-name" required class="w-full border rounded p-2 text-sm"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo (Login)</label><input type="email" id="new-user-email" required class="w-full border rounded p-2 text-sm"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Contraseña</label><input type="password" id="new-user-password" required class="w-full border rounded p-2 text-sm"></div>
+                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo Autorizado (Login)</label><input type="email" id="new-user-email" required class="w-full border rounded p-2 text-sm"></div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Rol</label>
                             <select id="new-user-role" required class="w-full border rounded p-2 text-sm bg-white" onchange="document.getElementById('client-select-container').style.display = this.value === 'cliente' ? 'block' : 'none'">
@@ -347,7 +325,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="bg-slate-50 text-slate-500 border-b">
-                                <tr><th class="px-6 py-3">Nombre</th><th class="px-6 py-3">Correo</th><th class="px-6 py-3">Contraseña</th><th class="px-6 py-3">Rol / Cliente</th><th class="px-6 py-3 text-right">Acción</th></tr>
+                                <tr><th class="px-6 py-3">Nombre</th><th class="px-6 py-3">Correo Autorizado</th><th class="px-6 py-3">Rol / Cliente</th><th class="px-6 py-3 text-right">Acción</th></tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100" id="users-table-body"></tbody>
                         </table>
@@ -356,7 +334,6 @@
             </div>
         </div>
 
-        <!-- ======================= 5. ADMIN: CLIENTES Y AGENDA ======================= -->
         <div id="view-clients-admin" class="hidden-view p-4 md:p-8 max-w-7xl mx-auto fade-in pb-24 no-print">
             <div class="mb-6 flex justify-between items-end">
                 <div>
@@ -367,7 +344,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- Sidebar -->
                 <div class="lg:col-span-1 space-y-6">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Seleccionar Cliente</label>
@@ -390,7 +366,6 @@
                     </div>
                 </div>
 
-                <!-- Main Area -->
                 <div class="lg:col-span-3 space-y-6">
                     <div id="admin-equipment-panel" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hidden">
                         <div class="bg-slate-50 border-b border-slate-200 px-6 py-4"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="layers" class="text-blue-600 w-5 h-5"></i> Inventario de Equipos</h3></div>
@@ -404,7 +379,6 @@
                         </div>
                     </div>
 
-                    <!-- REGISTRO DE BITÁCORAS -->
                     <div id="admin-logs-panel" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hidden">
                         <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
                             <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="history" class="text-blue-600 w-5 h-5"></i> Registro Histórico de Bitácoras</h3>
@@ -427,22 +401,16 @@
             </div>
         </div>
 
-        <!-- ======================= MODALES OCULTOS ======================= -->
-        
-        <!-- Modal: Historial por Equipo (Para Técnico) -->
         <div id="modal-eq-history" class="fixed inset-0 bg-slate-900/60 hidden z-[55] flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
                 <div class="bg-indigo-900 px-6 py-4 flex justify-between items-center text-white shrink-0">
                     <h3 class="font-bold flex items-center gap-2 text-lg"><i data-lucide="clock" class="w-5 h-5"></i> Historial de Intervenciones - <span id="history-eq-id" class="text-indigo-200"></span></h3>
                     <button type="button" onclick="document.getElementById('modal-eq-history').classList.add('hidden')" class="p-1 hover:bg-indigo-800 rounded transition-colors"><i data-lucide="x"></i></button>
                 </div>
-                <div class="p-6 overflow-y-auto flex-1 bg-slate-100" id="history-list-container">
-                    <!-- Rellenado por JS -->
-                </div>
+                <div class="p-6 overflow-y-auto flex-1 bg-slate-100" id="history-list-container"></div>
             </div>
         </div>
 
-        <!-- Modal: Confirmación Peligro (Global) -->
         <div id="modal-confirm" class="fixed inset-0 bg-slate-900/60 hidden z-[60] flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-red-600 px-6 py-4 flex justify-between items-center text-white">
@@ -452,24 +420,22 @@
                     <p id="confirm-message" class="text-slate-700 mb-6 text-sm">¿Está seguro de que desea realizar esta acción?</p>
                     <div class="flex justify-end gap-2">
                         <button type="button" onclick="app.closeConfirmModal()" class="px-4 py-2 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 text-sm font-medium">Cancelar</button>
-                        <button type="button" id="confirm-action-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700">Sí, Eliminar</button>
+                        <button type="button" id="confirm-action-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700">Sí, Confirmar</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal: Editar Usuario -->
         <div id="modal-edit-user" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white">
                     <h3 class="font-bold">Editar Usuario</h3>
                     <button type="button" onclick="document.getElementById('modal-edit-user').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button>
                 </div>
-                <form onsubmit="window.saveEditUser(event)" class="p-6 space-y-4">
+                <form onsubmit="app.saveEditUser(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-u-id">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="edit-u-name" required class="w-full border rounded p-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo (Login)</label><input type="email" id="edit-u-email" required class="w-full border rounded p-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Contraseña</label><input type="text" id="edit-u-password" required class="w-full border rounded p-2 text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo Autorizado (Login)</label><input type="email" id="edit-u-email" required class="w-full border rounded p-2 text-sm"></div>
                     <div>
                         <label class="block text-xs font-medium text-slate-600 mb-1">Rol</label>
                         <select id="edit-u-role" required class="w-full border rounded p-2 text-sm bg-white" onchange="document.getElementById('edit-u-client-container').style.display = this.value === 'cliente' ? 'block' : 'none'">
@@ -490,11 +456,10 @@
             </div>
         </div>
 
-        <!-- Modal: Add Client -->
         <div id="modal-add-client" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Cliente</h3><button type="button" onclick="document.getElementById('modal-add-client').classList.add('hidden')" class="p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <form onsubmit="window.addClient(event)" class="p-6 space-y-4">
+                <form onsubmit="app.addClient(event)" class="p-6 space-y-4">
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label><input type="text" id="add-c-name" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Dirección</label><input type="text" id="add-c-address" required class="w-full border rounded p-2"></div>
                     <div class="grid grid-cols-2 gap-4">
@@ -509,11 +474,10 @@
             </div>
         </div>
 
-        <!-- Modal: Editar Cliente -->
         <div id="modal-edit-client" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Cliente</h3><button type="button" onclick="document.getElementById('modal-edit-client').classList.add('hidden')" class="p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <form onsubmit="window.saveEditClient(event)" class="p-6 space-y-4">
+                <form onsubmit="app.saveEditClient(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-c-id">
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label><input type="text" id="edit-c-name" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Dirección</label><input type="text" id="edit-c-address" required class="w-full border rounded p-2"></div>
@@ -529,11 +493,10 @@
             </div>
         </div>
 
-        <!-- Modal: Add Eq -->
         <div id="modal-add-eq" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Equipo (Ficha Técnica)</h3><button type="button" onclick="document.getElementById('modal-add-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="window.saveEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
+                <form onsubmit="app.saveEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="add-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="add-eq-key" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Tipo</label><select id="add-eq-type" required class="w-full border rounded p-2 text-sm bg-white"><option value="">Seleccione...</option><option>Minisplit</option><option>Paquete / RoofTop</option><option>Dividido</option><option>Chiller</option></select></div>
@@ -556,11 +519,10 @@
             </div>
         </div>
 
-        <!-- Modal: Editar Eq -->
         <div id="modal-edit-eq" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Ficha del Equipo</h3><button type="button" onclick="document.getElementById('modal-edit-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="window.saveEditEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
+                <form onsubmit="app.saveEditEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
                     <input type="hidden" id="edit-eq-id">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="edit-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="edit-eq-key" required class="w-full border rounded p-2 text-sm"></div>
@@ -584,11 +546,10 @@
             </div>
         </div>
 
-        <!-- Modal: Programar Servicio (General o Por Equipo) -->
         <div id="modal-schedule-service" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Agendar Servicio</h3><button type="button" onclick="document.getElementById('modal-schedule-service').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="window.saveScheduledService(event)" class="p-6 space-y-4">
+                <form onsubmit="app.saveScheduledService(event)" class="p-6 space-y-4">
                     <input type="hidden" id="schedule-eq-id">
                     <div><label class="block text-sm font-medium mb-1">Fecha</label><input type="date" id="schedule-date" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium mb-1">Notas / Motivo</label><textarea id="schedule-notes" class="w-full border rounded p-2" rows="2"></textarea></div>
@@ -600,11 +561,10 @@
             </div>
         </div>
 
-        <!-- Modal: Editar Servicio -->
         <div id="modal-edit-service" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Cita Programada</h3><button type="button" onclick="document.getElementById('modal-edit-service').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="window.saveEditService(event)" class="p-6 space-y-4">
+                <form onsubmit="app.saveEditService(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-s-id">
                     <div><label class="block text-sm font-medium mb-1">Fecha</label><input type="date" id="edit-s-date" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium mb-1">Notas</label><textarea id="edit-s-notes" class="w-full border rounded p-2" rows="2"></textarea></div>
@@ -618,7 +578,6 @@
 
     </main>
 
-    <!-- ======================= ÁREA DE IMPRESIÓN (PDF) ======================= -->
     <div id="print-view" class="hidden-view bg-white text-black p-8 max-w-4xl mx-auto font-sans">
         <div class="border-b-2 border-blue-900 pb-2 mb-4 flex justify-between items-center">
             <div>
@@ -632,7 +591,6 @@
             </div>
         </div>
         
-        <!-- Contenido dinámico del reporte se inyecta aquí -->
         <div id="print-content" class="space-y-4"></div>
         
         <div class="mt-8 pt-6 border-t border-slate-300 text-center flex justify-around avoid-break">
@@ -645,146 +603,164 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-<script type="module">
-    // 1. Importar Supabase
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    <script type="module">
+        // 1. Importar Supabase
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    // 2. Configuración (Tus llaves reales)
-    const SUPABASE_URL = 'https://fdpravuvrwcgozbdhuua.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSP8pTzH_V5XvFmGf_O'; // Llave completa
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        // 2. Configuración Supabase
+        const SUPABASE_URL = 'https://fdpravuvrwcgozbdhuua.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSP8pTzH_V5XvFmGf_O'; 
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        window.supabase = supabase;
 
-    // 3. Hacer que Supabase sea global para que no de error
-    window.supabase = supabase;
+        // 3. PIN MAESTRO DE SEGURIDAD EMPRESARIAL
+        const PIN_EMPRESA = 'BISONTE2026';
 
-    // 4. CORRECCIÓN VITAL PARA EL LOGIN
-    // Buscamos donde empieza el objeto "const app = { ... }"
-    // y justo DESPUÉS de que se defina ese objeto, añade estas líneas:
-    
-    window.handleLogin = (e) => app.handleLogin(e);
-    window.logout = () => app.logout();
-    window.switchView = (view) => app.switchView(view);
+        // Componentes para la bitácora
+        const hvacComponents = ["Serpentín Evaporador", "Serpentín Condensador", "Filtros de Aire", "Turbina / Ventilador", "Motor Condensadora", "Compresor", "Tarjeta PCB", "Capacitores", "Charola / Drenaje", "Aislamiento"];
 
-const app = {
-        currentUser: null,
-        views: ['login', 'tech-home', 'tech-form', 'client', 'users', 'clients-admin'],
-        currentSelectedClientId: null,
-        confirmCallback: null,
+        // BASE DE DATOS LOCAL SEGURA (Sin contraseñas personales)
+        const appDB = {
+            users: [
+                { id: 'u1', name: 'Israel Ramirez Bolaños', email: 'israelrbolanos@bisonteingenieria.com', role: 'admin' },
+                { id: 'u2', name: 'Técnico Juan', email: 'juan@tecnico.com', role: 'tecnico' },
+                { id: 'u3', name: 'Admin Torre XYZ', email: 'hotel@cliente.com', role: 'cliente', clientId: 1 }
+            ],
+            clients: [
+                { id: 1, name: 'Torre Corporativa XYZ', address: 'Av. Reforma 123, CDMX', startDate: '2025-11-15', frequency: 'Trimestral' }
+            ],
+            services: [
+                { id: 1, clientId: 1, eqId: null, date: '2025-11-15', notes: 'Servicio Inicial', status: 'completed', reminderSent: true },
+                { id: 2, clientId: 1, eqId: null, date: '2026-02-15', notes: 'Q1 Mantenimiento', status: 'pending', reminderSent: false }
+            ],
+            equipments: [
+                { id: 101, clientId: 1, unitId: 'AC-01', key: 'TR-01', type: 'Minisplit', brand: 'Trane', location: 'Recepción', capacity: '3 TR', gas: 'R-410A', itm: '30', polos: '2', status: 'Operativo', lastPreventiveDate: '2025-11-15', correctiveDetails: null },
+                { id: 102, clientId: 1, unitId: 'AC-02', key: 'TR-02', type: 'Minisplit', brand: 'Trane', location: 'Sala Juntas', capacity: '5 TR', gas: 'R-410A', itm: '40', polos: '2', status: 'Operativo', lastPreventiveDate: null, correctiveDetails: null }
+            ],
+            logs: []
+        };
 
-        loadDB: function() {
-            const stored = localStorage.getItem('bisonte_hvac_db');
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    appDB.users = parsed.users || appDB.users;
-                    appDB.clients = parsed.clients || appDB.clients;
-                    appDB.services = parsed.services || appDB.services;
-                    appDB.equipments = parsed.equipments || appDB.equipments;
-                    appDB.logs = parsed.logs || appDB.logs;
-                } catch (e) { console.error("DB Load Error", e); }
-            }
-        },
+        const app = {
+            currentUser: null,
+            views: ['login', 'tech-home', 'tech-form', 'client', 'users', 'clients-admin'],
+            currentSelectedClientId: null,
+            confirmCallback: null,
 
-        saveDB: function() {
-            try {
-                localStorage.setItem('bisonte_hvac_db', JSON.stringify(appDB));
-            } catch (e) {
-                console.error("DB Save Error", e);
-                this.showToast("Memoria llena. Intente borrar historial antiguo.", "error");
-            }
-        },
-
-        init: function() {
-            this.loadDB();
-            this.renderComponentsTable();
-            this.renderUsersTable();
-            this.renderClientsSelectors();
-        },
-
-        // --- NAVEGACIÓN Y LOGIN ---
-        handleLogin: function(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('login-email').value.toLowerCase();
-            const passwordInput = document.getElementById('login-password').value;
-            
-            const userFound = appDB.users.find(u => u.email.toLowerCase() === emailInput && u.password === passwordInput);
-            
-            if (userFound) {
-                this.currentUser = { ...userFound, displayName: userFound.name };
-                document.getElementById('user-display-name').textContent = userFound.name;
-                document.getElementById('user-display-role').textContent = `Rol: ${userFound.role}`;
-                
-                this.updateNavigation();
-                
-                if(userFound.role === 'admin') this.switchView('clients-admin');
-                else if (userFound.role === 'tecnico') this.switchView('tech-home');
-                else {
-                    this.currentSelectedClientId = userFound.clientId;
-                    this.loadClientDashboard(userFound.clientId);
-                    this.switchView('client');
+            loadDB: function() {
+                const stored = localStorage.getItem('bisonte_hvac_db');
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        appDB.users = parsed.users || appDB.users;
+                        appDB.clients = parsed.clients || appDB.clients;
+                        appDB.services = parsed.services || appDB.services;
+                        appDB.equipments = parsed.equipments || appDB.equipments;
+                        appDB.logs = parsed.logs || appDB.logs;
+                    } catch (e) { console.error("DB Load Error", e); }
                 }
-                this.showToast(`Bienvenido, ${userFound.name}`, 'success');
-            } else {
-                this.showToast('Correo o contraseña incorrectos.', 'error');
-            }
-        },
+            },
 
-        logout: function() {
-            this.currentUser = null;
-            this.switchView('login');
-        },
+            saveDB: function() {
+                try {
+                    localStorage.setItem('bisonte_hvac_db', JSON.stringify(appDB));
+                } catch (e) {
+                    console.error("DB Save Error", e);
+                    this.showToast("Memoria llena. Intente borrar historial antiguo.", "error");
+                }
+            },
 
-        updateNavigation: function() {
-            const navLinksDesktop = document.getElementById('nav-links');
-            const role = this.currentUser.role;
-            let html = '';
-            if (role === 'admin') {
-                html += this.createNavLink('Clientes y Agenda', 'clients-admin', 'building-2');
-                html += this.createNavLink('Panel Técnico', 'tech-home', 'wrench');
-                html += this.createNavLink('Usuarios', 'users', 'users');
-            } else if (role === 'tecnico') {
-                html += this.createNavLink('Panel Técnico', 'tech-home', 'wrench');
-            } else if (role === 'cliente') {
-                html += this.createNavLink('Mi Panel', 'client', 'layout-dashboard');
-            }
-            navLinksDesktop.innerHTML = html;
-            document.getElementById('mobile-nav-links').innerHTML = html;
-            lucide.createIcons();
-        },
+            init: function() {
+                this.loadDB();
+                this.renderComponentsTable();
+                this.renderUsersTable();
+                this.renderClientsSelectors();
+            },
 
-        createNavLink: function(text, target, icon) {
-            return `<button onclick="window.switchView('${target}')" class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-blue-100 hover:bg-blue-800"><i data-lucide="${icon}" class="w-4 h-4"></i> ${text}</button>`;
-        },
+            // --- NAVEGACIÓN Y LOGIN SEGURO ---
+            handleLogin: function(e) {
+                e.preventDefault();
+                const emailInput = document.getElementById('login-email').value.toLowerCase();
+                const pinInput = document.getElementById('login-password').value;
+                
+                // 1. Validar PIN Corporativo
+                if (pinInput !== PIN_EMPRESA) {
+                    return this.showToast('PIN de empresa incorrecto.', 'error');
+                }
 
-        switchView: function(viewId) {
-            this.views.forEach(v => document.getElementById(`view-${v}`).classList.add('hidden-view'));
-            document.getElementById(`view-${viewId}`).classList.remove('hidden-view');
-            if (viewId === 'login') { document.getElementById('navbar').classList.add('hidden-view'); } 
-            else { document.getElementById('navbar').classList.remove('hidden-view'); }
-            window.scrollTo(0,0);
-        },
+                // 2. Validar que el correo exista en el registro
+                const userFound = appDB.users.find(u => u.email.toLowerCase() === emailInput);
+                
+                if (userFound) {
+                    if (userFound.role === 'cliente') {
+                        const clientExists = appDB.clients.find(c => c.id == userFound.clientId);
+                        if (!clientExists) {
+                            return this.showToast('Esta cuenta de cliente no tiene una empresa asignada válida.', 'error');
+                        }
+                    }
 
-        // ... el resto de tus funciones (render, print, etc) deben ir aquí sin "window." delante ...
-        showToast: function(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 fade-in text-sm font-medium ${type === 'success' ? 'bg-green-600' : (type === 'error' ? 'bg-red-600' : 'bg-blue-600')}`;
-            toast.innerHTML = `<i data-lucide="info" class="w-5 h-5"></i><span>${message}</span>`;
-            container.appendChild(toast);
-            lucide.createIcons({root: toast});
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
-        }
-    };
+                    this.currentUser = { ...userFound, displayName: userFound.name };
+                    document.getElementById('user-display-name').textContent = userFound.name;
+                    document.getElementById('user-display-role').textContent = `Rol: ${userFound.role}`;
+                    
+                    this.updateNavigation();
+                    
+                    if(userFound.role === 'admin') this.switchView('clients-admin');
+                    else if (userFound.role === 'tecnico') this.switchView('tech-home');
+                    else {
+                        this.currentSelectedClientId = userFound.clientId;
+                        this.loadClientDashboard(userFound.clientId);
+                        this.switchView('client');
+                    }
+                    this.showToast(`Bienvenido, ${userFound.name}`, 'success');
+                    document.getElementById('login-form').reset();
+                } else {
+                    this.showToast('Correo no autorizado en el sistema.', 'error');
+                }
+            },
 
-    // INICIALIZACIÓN Y EXPOSICIÓN GLOBAL (Al final del script)
-    document.addEventListener('DOMContentLoaded', () => { app.init(); });
+            logout: function() {
+                this.currentUser = null;
+                this.switchView('login');
+            },
 
-    window.handleLogin = (e) => app.handleLogin(e);
-    window.logout = () => app.logout();
-    window.switchView = (view) => app.switchView(view);
-    window.selectTechClient = () => app.selectTechClient();
-    window.enviarMantenimiento = (e) => enviarMantenimiento(e); // Si tienes la función de Supabase fuera
+            updateNavigation: function() {
+                const navLinksDesktop = document.getElementById('nav-links');
+                const role = this.currentUser.role;
+                let html = '';
+                if (role === 'admin') {
+                    html += this.createNavLink('Clientes y Agenda', 'clients-admin', 'building-2');
+                    html += this.createNavLink('Panel Técnico', 'tech-home', 'wrench');
+                    html += this.createNavLink('Usuarios', 'users', 'users');
+                } else if (role === 'tecnico') {
+                    html += this.createNavLink('Panel Técnico', 'tech-home', 'wrench');
+                } else if (role === 'cliente') {
+                    html += this.createNavLink('Mi Panel', 'client', 'layout-dashboard');
+                }
+                
+                navLinksDesktop.innerHTML = html;
+                document.getElementById('mobile-nav-links').innerHTML = html;
+                lucide.createIcons();
+            },
+
+            createNavLink: function(text, target, icon) {
+                return `<button onclick="app.switchView('${target}')" class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-blue-100 hover:bg-blue-800"><i data-lucide="${icon}" class="w-4 h-4"></i> ${text}</button>`;
+            },
+
+            switchView: function(viewId) {
+                // Control estricto de vistas
+                if (this.currentUser && this.currentUser.role === 'tecnico' && viewId !== 'tech-home' && viewId !== 'tech-form' && viewId !== 'login') {
+                    return this.showToast('No tiene permisos para ver esta sección.', 'error');
+                }
+                if (this.currentUser && this.currentUser.role === 'cliente' && viewId !== 'client' && viewId !== 'login') {
+                    return this.showToast('No tiene permisos para ver esta sección.', 'error');
+                }
+
+                this.views.forEach(v => document.getElementById(`view-${v}`).classList.add('hidden-view'));
+                document.getElementById(`view-${viewId}`).classList.remove('hidden-view');
+                if (viewId === 'login') { document.getElementById('navbar').classList.add('hidden-view'); } 
+                else { document.getElementById('navbar').classList.remove('hidden-view'); }
+                window.scrollTo(0,0);
+            },
 
             // --- SISTEMA DE CONFIRMACIÓN ---
             openConfirmModal: function(message, callback) {
@@ -807,20 +783,18 @@ const app = {
                 e.preventDefault();
                 const name = document.getElementById('new-user-name').value;
                 const email = document.getElementById('new-user-email').value;
-                const password = document.getElementById('new-user-password').value;
                 const role = document.getElementById('new-user-role').value;
                 const clientId = role === 'cliente' ? parseInt(document.getElementById('new-user-client-id').value) : null;
                 
                 if(appDB.users.some(u => u.email === email)) return this.showToast('Correo ya registrado', 'error');
-                
                 if (role === 'cliente' && (!clientId || isNaN(clientId))) {
                     return this.showToast('Debe asignar un cliente válido para esta cuenta.', 'error');
                 }
 
-                appDB.users.push({ id: `u${Date.now()}`, name, email, password, role, clientId });
+                appDB.users.push({ id: `u${Date.now()}`, name, email, role, clientId });
                 this.renderUsersTable();
                 this.saveDB();
-                this.showToast('Usuario creado.', 'success');
+                this.showToast('Usuario creado. (Acceso mediante PIN Empresa)', 'success');
                 e.target.reset();
                 document.getElementById('client-select-container').style.display = 'none';
             },
@@ -831,7 +805,6 @@ const app = {
                     document.getElementById('edit-u-id').value = u.id;
                     document.getElementById('edit-u-name').value = u.name;
                     document.getElementById('edit-u-email').value = u.email;
-                    document.getElementById('edit-u-password').value = u.password;
                     document.getElementById('edit-u-role').value = u.role;
                     document.getElementById('edit-u-client-container').style.display = u.role === 'cliente' ? 'block' : 'none';
                     if(u.role === 'cliente' && u.clientId) {
@@ -848,7 +821,6 @@ const app = {
                 if(u) {
                     u.name = document.getElementById('edit-u-name').value;
                     u.email = document.getElementById('edit-u-email').value;
-                    u.password = document.getElementById('edit-u-password').value;
                     u.role = document.getElementById('edit-u-role').value;
                     u.clientId = u.role === 'cliente' ? parseInt(document.getElementById('edit-u-client-id').value) : null;
                     
@@ -864,7 +836,7 @@ const app = {
             },
 
             requestDeleteUser: function(userId) {
-                this.openConfirmModal('¿Está seguro de eliminar permanentemente a este usuario? Perderá acceso inmediato al sistema.', () => {
+                this.openConfirmModal('¿Está seguro de eliminar permanentemente a este usuario?', () => {
                     appDB.users = appDB.users.filter(u => u.id !== userId);
                     this.saveDB();
                     this.renderUsersTable();
@@ -877,10 +849,9 @@ const app = {
                 let html = '';
                 appDB.users.forEach(u => {
                     let roleStr = u.role === 'cliente' ? `Cliente (${appDB.clients.find(c=>c.id==u.clientId)?.name || 'Desconocido'})` : u.role;
-                    // Proteger al admin principal
                     let editBtn = `<button onclick="app.openEditUserModal('${u.id}')" class="text-blue-600 hover:text-blue-800 p-1 bg-blue-50 rounded mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>`;
                     let delBtn = u.id === 'u1' ? '' : `<button onclick="app.requestDeleteUser('${u.id}')" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
-                    html += `<tr class="border-b hover:bg-slate-50"><td class="px-6 py-3 font-medium">${u.name}</td><td class="px-6 py-3">${u.email}</td><td class="px-6 py-3"><span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded border border-slate-200">${u.password}</span></td><td class="px-6 py-3 capitalize">${roleStr}</td><td class="px-6 py-3 text-right whitespace-nowrap">${editBtn}${delBtn}</td></tr>`;
+                    html += `<tr class="border-b hover:bg-slate-50"><td class="px-6 py-3 font-medium">${u.name}</td><td class="px-6 py-3">${u.email}</td><td class="px-6 py-3 capitalize">${roleStr}</td><td class="px-6 py-3 text-right whitespace-nowrap">${editBtn}${delBtn}</td></tr>`;
                 });
                 tbody.innerHTML = html;
                 lucide.createIcons();
@@ -1318,6 +1289,12 @@ const app = {
                         let comments = l.techComments ? `<p class="text-sm text-slate-600 mt-2 bg-white p-2 rounded border border-slate-200"><b>Comentario:</b> ${l.techComments}</p>` : '';
                         let errorDetails = l.needsCorrective ? `<p class="text-sm text-red-600 mt-2 bg-red-50 p-2 rounded border border-red-200"><b>Falla Detectada:</b> ${l.correctiveDetails}</p>` : '';
                         
+                        // Fallback handling for data fields to prevent errors on older local records
+                        const dVolts = l.data?.volts || '--';
+                        const dAmps = l.data?.amps || '--';
+                        const dPsi = l.data?.psi || '--';
+                        const dTemp = l.data?.temp || '--';
+
                         html += `
                             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative hover:shadow-md transition-shadow">
                                 <div class="flex justify-between items-start mb-3 border-b border-slate-100 pb-2">
@@ -1328,10 +1305,10 @@ const app = {
                                     ${badge}
                                 </div>
                                 <div class="grid grid-cols-4 gap-2 text-xs mb-2">
-                                    <div class="bg-slate-50 p-1.5 rounded text-center"><span class="block text-[9px] text-slate-400 uppercase">Voltaje</span><span class="font-semibold text-slate-700">${l.data.volts}V</span></div>
-                                    <div class="bg-slate-50 p-1.5 rounded text-center"><span class="block text-[9px] text-slate-400 uppercase">Amperaje</span><span class="font-semibold text-slate-700">${l.data.amps}A</span></div>
-                                    <div class="bg-slate-50 p-1.5 rounded text-center"><span class="block text-[9px] text-slate-400 uppercase">Presión</span><span class="font-semibold text-slate-700">${l.data.psi} PSI</span></div>
-                                    <div class="bg-slate-50 p-1.5 rounded text-center"><span class="block text-[9px] text-slate-400 uppercase">Temp. Iny.</span><span class="font-semibold text-slate-700">${l.data.temp}°C</span></div>
+                                    <div class="bg-slate-50 p-1.5 rounded text-center"><span class="block text-[9px] text-slate-400 uppercase">Voltaje</span><span class="font-semibold text-slate-700">${dVolts}V</span></div>
+                                    <div class="bg-slate-50 p-1.5 rounded text-center"><span class="block text-[9px] text-slate-400 uppercase">Amperaje</span><span class="font-semibold text-slate-700">${dAmps}A</span></div>
+                                    <div class="bg-slate-50 p-1.5 rounded text-center"><span class="block text-[9px] text-slate-400 uppercase">Presión</span><span class="font-semibold text-slate-700">${dPsi} PSI</span></div>
+                                    <div class="bg-slate-50 p-1.5 rounded text-center"><span class="block text-[9px] text-slate-400 uppercase">Temp. Iny.</span><span class="font-semibold text-slate-700">${dTemp}°C</span></div>
                                 </div>
                                 ${comments}
                                 ${errorDetails}
@@ -1383,97 +1360,105 @@ const app = {
                 }
             },
 
-           // Nueva función para enviar a la nube de Bisonte
-    window.enviarMantenimiento = async (e) => {
-        e.preventDefault();
-        app.showToast("Sincronizando con Bisonte Cloud...", "info");
+            // --- ENVÍO PRINCIPAL A SUPABASE Y DB LOCAL ---
+            submitTechForm: async function(e) {
+                e.preventDefault();
+                this.showToast("Sincronizando con Bisonte Cloud...", "info");
 
-        try {
-            const fotosIds = ['before', 'during', 'after'];
-            const urls = { before: null, during: null, after: null };
+                try {
+                    const eqId = parseInt(document.getElementById('tf-eq-id').value);
+                    const eq = appDB.equipments.find(eq => eq.id === eqId);
+                    
+                    const fotosIds = ['before', 'during', 'after'];
+                    const urls = { before: null, during: null, after: null };
+                    const localPhotos = { before: null, during: null, after: null };
 
-            // 1. SUBIR FOTOS AL STORAGE
-            for (const id of fotosIds) {
-                const imgElement = document.getElementById(`img-preview-${id}`);
-                // Solo subimos si el técnico tomó la foto (si no está oculta)
-                if (imgElement && !imgElement.classList.contains('hidden')) {
-                    const blob = await fetch(imgElement.src).then(res => res.blob());
-                    const fileName = `hvac-${Date.now()}-${id}.jpg`;
+                    // 1. SUBIR FOTOS AL STORAGE DE SUPABASE
+                    for (const id of fotosIds) {
+                        const imgElement = document.getElementById(`img-preview-${id}`);
+                        if (imgElement && !imgElement.classList.contains('hidden')) {
+                            // Guardar base64 local para renderizado inmediato
+                            localPhotos[id] = imgElement.src;
+                            
+                            // Convertir y subir a la nube
+                            const blob = await fetch(imgElement.src).then(res => res.blob());
+                            const fileName = `hvac-${Date.now()}-${id}.jpg`;
 
-                    const { error: uploadError } = await window.supabase.storage.from('evidencias').upload(fileName, blob);
+                            const { error: uploadError } = await window.supabase.storage.from('evidencias').upload(fileName, blob);
+                            if (uploadError) throw uploadError;
 
-                    if (uploadError) throw uploadError;
+                            const { data } = window.supabase.storage.from('evidencias').getPublicUrl(fileName);
+                            urls[id] = data.publicUrl;
+                        }
+                    }
 
-                    // Obtenemos el link público de la foto
-                    const { data } = window.supabase.storage.from('evidencias').getPublicUrl(fileName);
-                    urls[id] = data.publicUrl;
-                }
-            }
-
-            // 2. GUARDAR DATOS EN LA TABLA SQL
-            const { error: dbError } = await window.supabase.from('bitacoras').insert([{
-                    eq_id: document.getElementById('tf-display-id').textContent,
-                    tech_name: app.currentUser.displayName,
-                    volts: parseFloat(document.getElementById('tf-volts').value) || 0,
-                    amps: parseFloat(document.getElementById('tf-amps').value) || 0,
-                    psi: parseFloat(document.getElementById('tf-psi').value) || 0,
-                    temp: parseFloat(document.getElementById('tf-temp').value) || 0,
-                    tech_comments: document.getElementById('tf-tech-comments').value,
-                    foto_before: urls.before,
-                    foto_during: urls.during,
-                    foto_after: urls.after,
-                    needs_corrective: document.getElementById('tf-needs-corrective').checked,
-                    corrective_details: document.getElementById('tf-corrective-details').value
-                }]);
-
-            if (dbError) throw dbError;
-
-            app.showToast("¡Registro exitoso en la nube!", "success");
-            app.switchView('tech-home');
-
-        } catch (err) {
-            console.error(err);
-            app.showToast("Error de conexión: " + err.message, "error");
-        }
-    };
-
-                const logEntry = {
-                    id: Date.now(),
-                    eqId: eq.id,
-                    clientId: eq.clientId,
-                    techName: this.currentUser.displayName,
-                    date: dateStr,
-                    time: now.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
-                    techComments: document.getElementById('tf-tech-comments').value,
-                    photos: {
-                        before: getImg('img-preview-before'),
-                        during: getImg('img-preview-during'),
-                        after: getImg('img-preview-after')
-                    },
-                    data: {
-                        volts: document.getElementById('tf-volts').value,
-                        amps: document.getElementById('tf-amps').value,
-                        psi: document.getElementById('tf-psi').value,
-                        temp: document.getElementById('tf-temp').value
-                    },
-                    components: Array.from(document.querySelectorAll('#components-list tr')).map(tr => ({
+                    // 2. CONSTRUIR OBJETO DE DATOS
+                    const now = new Date();
+                    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+                    
+                    const techData = {
+                        volts: parseFloat(document.getElementById('tf-volts').value) || 0,
+                        amps: parseFloat(document.getElementById('tf-amps').value) || 0,
+                        psi: parseFloat(document.getElementById('tf-psi').value) || 0,
+                        temp: parseFloat(document.getElementById('tf-temp').value) || 0
+                    };
+                    
+                    const componentsData = Array.from(document.querySelectorAll('#components-list tr')).map(tr => ({
                         name: tr.getAttribute('data-comp'),
                         status: tr.querySelector('.comp-status').value,
                         obs: tr.querySelector('.comp-obs').value
-                    })),
-                    needsCorrective: document.getElementById('tf-needs-corrective').checked,
-                    correctiveDetails: document.getElementById('tf-corrective-details').value
-                };
+                    }));
 
-                appDB.logs.push(logEntry);
-                eq.lastPreventiveDate = dateStr;
-                if(logEntry.needsCorrective) { eq.status = 'Requiere Correctivo'; eq.correctiveDetails = logEntry.correctiveDetails; } 
-                else { eq.status = 'Operativo'; eq.correctiveDetails = null; }
+                    // 3. ENVIAR A SUPABASE (Nube)
+                    const { error: dbError } = await window.supabase.from('bitacoras').insert([{
+                        eq_id: document.getElementById('tf-display-id').textContent,
+                        client_id: eq.clientId,
+                        tech_name: this.currentUser.displayName,
+                        volts: techData.volts,
+                        amps: techData.amps,
+                        psi: techData.psi,
+                        temp: techData.temp,
+                        components_json: componentsData,
+                        tech_comments: document.getElementById('tf-tech-comments').value,
+                        foto_before: urls.before,
+                        foto_during: urls.during,
+                        foto_after: urls.after,
+                        needs_corrective: document.getElementById('tf-needs-corrective').checked,
+                        corrective_details: document.getElementById('tf-corrective-details').value
+                    }]);
 
-                this.saveDB();
-                this.showToast('Bitácora guardada en el historial general.', 'success');
-                this.switchView('tech-home');
-                this.updateClientUI('tech', eq.clientId);
+                    if (dbError) throw dbError;
+
+                    // 4. GUARDAR EN LOCAL DB (Para que la app siga funcionando sin recargar)
+                    const logEntry = {
+                        id: Date.now(),
+                        eqId: eq.id,
+                        clientId: eq.clientId,
+                        techName: this.currentUser.displayName,
+                        date: dateStr,
+                        time: now.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
+                        techComments: document.getElementById('tf-tech-comments').value,
+                        photos: localPhotos,
+                        data: techData,
+                        components: componentsData,
+                        needsCorrective: document.getElementById('tf-needs-corrective').checked,
+                        correctiveDetails: document.getElementById('tf-corrective-details').value
+                    };
+
+                    appDB.logs.push(logEntry);
+                    eq.lastPreventiveDate = dateStr;
+                    if(logEntry.needsCorrective) { eq.status = 'Requiere Correctivo'; eq.correctiveDetails = logEntry.correctiveDetails; } 
+                    else { eq.status = 'Operativo'; eq.correctiveDetails = null; }
+
+                    this.saveDB();
+                    this.showToast("¡Bitácora guardada en la nube y en local!", "success");
+                    this.switchView('tech-home');
+                    this.updateClientUI('tech', eq.clientId);
+
+                } catch (err) {
+                    console.error(err);
+                    this.showToast("Error de conexión: " + err.message, "error");
+                }
             },
 
             // --- RENDERIZADO DE TABLAS ---
@@ -1596,6 +1581,12 @@ const app = {
                             if(latestLog.photos.after) photosHtml += `<div><p>Después</p><img src="${latestLog.photos.after}" class="w-full h-20 object-contain bg-slate-50 border mt-1"></div>`;
                             photosHtml += `</div>`;
                         }
+                        
+                        // Fallback parameters safety
+                        const dVolts = latestLog.data?.volts || '--';
+                        const dAmps = latestLog.data?.amps || '--';
+                        const dPsi = latestLog.data?.psi || '--';
+                        const dTemp = latestLog.data?.temp || '--';
 
                         detailedLogsHtml += `
                             <div class="print-break avoid-break pt-4 mt-4">
@@ -1607,9 +1598,9 @@ const app = {
                                 
                                 <h3 class="text-[11px] font-bold bg-slate-200 p-1 mb-1">PARÁMETROS OPERATIVOS</h3>
                                 <div class="grid grid-cols-4 gap-2 text-[11px] mb-2 border p-2 rounded">
-                                    <div><span class="text-slate-500 block text-[9px]">Voltaje</span><b>${latestLog.data.volts} V</b></div>
-                                    <div><span class="text-slate-500 block text-[9px]">Amperaje</span><b>${latestLog.data.amps} A</b></div>
-                                    <div><span class="text-slate-500 block text-[9px]">Presión</span><b>${latestLog.data.psi} PSI</b></div>
+                                    <div><span class="text-slate-500 block text-[9px]">Voltaje</span><b>${dVolts} V</b></div>
+                                    <div><span class="text-slate-500 block text-[9px]">Amperaje</span><b>${dAmps} A</b></div>
+                                    <div><span class="text-slate-500 block text-[9px]">Presión</span><b>${dPsi} PSI</b></div>
                                     <div><span class="text-slate-500 block text-[9px]">Refrigerante</span><b>${eq.gas || '-'}</b></div>
                                 </div>
 
@@ -1667,6 +1658,12 @@ const app = {
                     if(log.photos.after) photosHtml += `<div><p>Después</p><img src="${log.photos.after}" class="w-full h-20 object-contain bg-slate-50 border mt-1"></div>`;
                     photosHtml += `</div>`;
                 }
+                
+                // Fallback parameters safety
+                const dVolts = log.data?.volts || '--';
+                const dAmps = log.data?.amps || '--';
+                const dPsi = log.data?.psi || '--';
+                const dTemp = log.data?.temp || '--';
 
                 document.getElementById('print-content').innerHTML = `
                     <div class="flex justify-between bg-slate-100 p-4 rounded mb-4 border border-slate-300 text-sm">
@@ -1683,10 +1680,10 @@ const app = {
 
                     <h2 class="text-xs font-bold bg-blue-900 text-white p-1 px-2 mb-2">PARÁMETROS OPERATIVOS MEDIDOS</h2>
                     <div class="grid grid-cols-4 gap-4 text-xs mb-4 border p-2 rounded">
-                        <div><span class="text-slate-500 block text-[10px]">Voltaje</span><b>${log.data.volts} V</b></div>
-                        <div><span class="text-slate-500 block text-[10px]">Amperaje</span><b>${log.data.amps} A</b></div>
-                        <div><span class="text-slate-500 block text-[10px]">Presión Gas</span><b>${log.data.psi} PSI</b></div>
-                        <div><span class="text-slate-500 block text-[10px]">Temp Inyección</span><b>${log.data.temp} °C</b></div>
+                        <div><span class="text-slate-500 block text-[10px]">Voltaje</span><b>${dVolts} V</b></div>
+                        <div><span class="text-slate-500 block text-[10px]">Amperaje</span><b>${dAmps} A</b></div>
+                        <div><span class="text-slate-500 block text-[10px]">Presión Gas</span><b>${dPsi} PSI</b></div>
+                        <div><span class="text-slate-500 block text-[10px]">Temp Inyección</span><b>${dTemp} °C</b></div>
                         <div><span class="text-slate-500 block text-[10px]">Refrigerante</span><b>${eq.gas || '-'}</b></div>
                         <div><span class="text-slate-500 block text-[10px]">ITM</span><b>${eq.itm || '-'} A (${eq.polos||'-'}P)</b></div>
                     </div>
@@ -1716,16 +1713,10 @@ const app = {
             }
         };
 
+        // EXPOSICIÓN GLOBAL ESTRICTA Y SEGURA
+        window.app = app;
         document.addEventListener('DOMContentLoaded', () => { app.init(); });
-  // Esto hace que los botones del HTML puedan ver las funciones del script
-window.handleLogin = (e) => app.handleLogin(e);
-window.logout = () => app.logout();
-window.switchView = (view) => app.switchView(view);  
+
     </script>
 </body>
-
 </html>
-
-
-
-
