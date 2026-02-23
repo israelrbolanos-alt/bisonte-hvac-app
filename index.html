@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bisonte Ingeniería - App HVAC PRO</title>
+    <title>Bisonte Ingeniería - App HVAC</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -17,6 +18,8 @@
         .hidden-view { display: none !important; }
         .photo-upload-label { cursor: pointer; transition: all 0.2s; }
         .photo-upload-label:hover { background-color: #f8fafc; border-color: #3b82f6; }
+        
+        /* Estilos específicos para Impresión (PDF) */
         @media print {
             body { background: white !important; font-size: 11px; }
             #navbar, #footer, #toast-container, main > div:not(#print-view) { display: none !important; }
@@ -44,7 +47,7 @@
                         <p id="user-display-name" class="font-semibold text-blue-100"></p>
                         <p id="user-display-role" class="text-xs text-blue-300 uppercase tracking-wider"></p>
                     </div>
-                    <button onclick="app.logout()" class="p-2 bg-blue-800 hover:bg-blue-700 rounded-lg transition-colors" title="Cerrar Sesión">
+                    <button onclick="window.app.logout()" class="p-2 bg-blue-800 hover:bg-blue-700 rounded-lg transition-colors" title="Cerrar Sesión">
                         <i data-lucide="log-out" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -62,15 +65,15 @@
                         <i data-lucide="wind" class="w-8 h-8 text-blue-700"></i>
                     </div>
                     <h1 class="text-2xl font-bold text-slate-800">Bisonte Ingeniería</h1>
-                    <p class="text-slate-500 text-sm mt-1">Portal de Gestión HVAC en la Nube</p>
+                    <p class="text-slate-500 text-sm mt-1">Portal de Gestión HVAC</p>
                 </div>
                 
-                <form id="login-form" onsubmit="app.handleLogin(event)" class="space-y-5">
+                <form id="login-form" onsubmit="window.app.handleLogin(event)" class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Correo Electrónico Autorizado</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i data-lucide="mail" class="w-5 h-5 text-slate-400"></i></div>
-                            <input type="email" id="login-email" required class="pl-10 w-full rounded-lg border-slate-300 border p-2.5 focus:ring-blue-500" placeholder="usuario@bisonte.com">
+                            <input type="email" id="login-email" required class="pl-10 w-full rounded-lg border-slate-300 border p-2.5 focus:ring-blue-500" placeholder="ejemplo@bisonteingenieria.com">
                         </div>
                     </div>
                     <div>
@@ -100,7 +103,7 @@
                 <div class="lg:col-span-1 space-y-4">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Cliente Asignado</label>
-                        <select id="tech-client-selector" onchange="app.selectTechClient()" class="w-full border-slate-300 border rounded-lg p-2 text-sm bg-slate-50 focus:ring-blue-500"></select>
+                        <select id="tech-client-selector" onchange="window.app.selectTechClient()" class="w-full border-slate-300 border rounded-lg p-2 text-sm bg-slate-50 focus:ring-blue-500"></select>
                         <div id="tech-client-info" class="mt-4 hidden text-sm border-t pt-4">
                             <p class="font-semibold text-slate-800"><i data-lucide="map-pin" class="w-3 h-3 inline text-slate-400"></i> Dirección:</p>
                             <p id="tech-client-address" class="text-slate-600 mb-2">-</p>
@@ -111,7 +114,7 @@
                     <div id="tech-equipment-panel" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hidden">
                         <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
                             <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="layers" class="text-blue-600 w-5 h-5"></i> Banco de Equipos</h3>
-                            <button onclick="app.openAddEquipmentModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded flex items-center gap-1 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Nuevo Equipo</button>
+                            <button onclick="window.app.openAddEquipmentModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded flex items-center gap-1 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Nuevo Equipo</button>
                         </div>
                         <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
                             <table class="w-full text-sm text-left">
@@ -135,10 +138,10 @@
                     <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="clipboard-signature" class="text-blue-600"></i> Nueva Bitácora de Servicio</h2>
                     <p class="text-slate-500">Capture únicamente los parámetros y condiciones actuales de este mantenimiento.</p>
                 </div>
-                <button onclick="app.switchView('tech-home')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Cancelar</button>
+                <button onclick="window.app.switchView('tech-home')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Cancelar</button>
             </div>
 
-            <form id="tech-form" onsubmit="app.submitTechForm(event)" class="space-y-6">
+            <form id="tech-form" onsubmit="window.app.submitTechForm(event)" class="space-y-6">
                 <input type="hidden" id="tf-eq-id">
                 
                 <div class="bg-blue-900 text-white rounded-xl shadow-md overflow-hidden relative">
@@ -175,7 +178,7 @@
                                     <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i><p class="text-xs font-semibold">Tocar para Foto</p>
                                 </div>
                                 <img id="img-preview-before" class="absolute inset-0 w-full h-full object-cover hidden z-20">
-                                <input type="file" accept="image/*" class="hidden" onchange="app.previewImage(event, 'img-preview-before', 'preview-container-before')" />
+                                <input type="file" accept="image/*" class="hidden" onchange="window.app.previewImage(event, 'img-preview-before', 'preview-container-before')" />
                             </label>
                         </div>
                         <div>
@@ -185,7 +188,7 @@
                                     <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i><p class="text-xs font-semibold">Tocar para Foto</p>
                                 </div>
                                 <img id="img-preview-during" class="absolute inset-0 w-full h-full object-cover hidden z-20">
-                                <input type="file" accept="image/*" class="hidden" onchange="app.previewImage(event, 'img-preview-during', 'preview-container-during')" />
+                                <input type="file" accept="image/*" class="hidden" onchange="window.app.previewImage(event, 'img-preview-during', 'preview-container-during')" />
                             </label>
                         </div>
                         <div>
@@ -195,7 +198,7 @@
                                     <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i><p class="text-xs font-semibold">Tocar para Foto</p>
                                 </div>
                                 <img id="img-preview-after" class="absolute inset-0 w-full h-full object-cover hidden z-20">
-                                <input type="file" accept="image/*" class="hidden" onchange="app.previewImage(event, 'img-preview-after', 'preview-container-after')" />
+                                <input type="file" accept="image/*" class="hidden" onchange="window.app.previewImage(event, 'img-preview-after', 'preview-container-after')" />
                             </label>
                         </div>
                     </div>
@@ -225,7 +228,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-6 space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2"><i data-lucide="message-square" class="w-4 h-4 inline mr-1 text-blue-600"></i> Comentarios Generales del Técnico</label>
-                        <textarea id="tf-tech-comments" rows="2" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-blue-500 bg-slate-50" placeholder="Escriba observaciones sobre el funcionamiento..."></textarea>
+                        <textarea id="tf-tech-comments" rows="2" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-blue-500 bg-slate-50" placeholder="Escriba observaciones sobre el funcionamiento, el servicio realizado..."></textarea>
                     </div>
                     
                     <div class="p-4 bg-red-50 border border-red-200 rounded-lg mt-4 transition-all">
@@ -251,7 +254,7 @@
                     <h2 class="text-3xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="building" class="text-blue-600"></i> Mi Panel de Cliente</h2>
                     <p class="text-slate-500 mt-1" id="client-dash-name">Cargando...</p>
                 </div>
-                <button onclick="app.printClientDashboard()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
+                <button onclick="window.app.printClientDashboard()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
                     <i data-lucide="printer" class="w-4 h-4"></i> Imprimir Reporte General
                 </button>
             </div>
@@ -300,7 +303,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm self-start">
                     <h3 class="font-bold text-slate-800 mb-4 border-b pb-2">Registrar Usuario</h3>
-                    <form onsubmit="app.addUser(event)" class="space-y-4">
+                    <form onsubmit="window.app.addUser(event)" class="space-y-4">
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="new-user-name" required class="w-full border rounded p-2 text-sm"></div>
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo Autorizado</label><input type="email" id="new-user-email" required class="w-full border rounded p-2 text-sm"></div>
                         <div>
@@ -345,11 +348,11 @@
                 <div class="lg:col-span-1 space-y-6">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Seleccionar Cliente</label>
-                        <select id="admin-client-selector" onchange="app.selectAdminClient()" class="w-full border-slate-300 border rounded-lg p-2 text-sm bg-slate-50 focus:ring-blue-500"></select>
+                        <select id="admin-client-selector" onchange="window.app.selectAdminClient()" class="w-full border-slate-300 border rounded-lg p-2 text-sm bg-slate-50 focus:ring-blue-500"></select>
                         <div id="admin-client-info-card" class="mt-4 hidden text-sm border-t pt-4 relative">
                             <div class="absolute top-4 right-0 flex gap-1">
-                                <button onclick="app.openEditClientModal()" class="text-blue-600 hover:text-blue-800 p-1" title="Editar Cliente"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                                <button onclick="app.requestDeleteClient()" class="text-red-600 hover:text-red-800 p-1" title="Eliminar Cliente"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <button onclick="window.app.openEditClientModal()" class="text-blue-600 hover:text-blue-800 p-1" title="Editar Cliente"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                <button onclick="window.app.requestDeleteClient()" class="text-red-600 hover:text-red-800 p-1" title="Eliminar Cliente"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </div>
                             <p class="font-semibold text-slate-800 mt-2"><i data-lucide="map-pin" class="w-3 h-3 inline"></i> Dirección:</p><p id="ac-address" class="text-slate-600 mb-2">-</p>
                             <p class="font-semibold text-slate-800"><i data-lucide="repeat" class="w-3 h-3 inline"></i> Frecuencia:</p><p id="ac-frequency" class="text-blue-600 font-bold mb-2">-</p>
@@ -365,14 +368,11 @@
 
                 <div class="lg:col-span-3 space-y-6">
                     <div id="admin-equipment-panel" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hidden">
-                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
-                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="layers" class="text-blue-600 w-5 h-5"></i> Inventario de Equipos</h3>
-                            <button onclick="app.openAddEquipmentModal()" class="text-blue-600 border border-blue-200 px-3 py-1 bg-white rounded text-xs font-bold">Añadir Equipo</button>
-                        </div>
+                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="layers" class="text-blue-600 w-5 h-5"></i> Inventario de Equipos</h3></div>
                         <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
                             <table class="w-full text-sm text-left">
                                 <thead class="bg-slate-100 text-slate-500 sticky top-0">
-                                    <tr><th class="px-4 py-3">ID / Tipo</th><th class="px-4 py-3">Ubicación</th><th class="px-4 py-3">Último Prev.</th><th class="px-4 py-3">Fallas</th><th class="px-4 py-3 text-right">Acción</th></tr>
+                                    <tr><th class="px-4 py-3">ID / Tipo</th><th class="px-4 py-3">Ubicación</th><th class="px-4 py-3">Último Prev.</th><th class="px-4 py-3">Fallas</th><th class="px-4 py-3 text-right">Estatus / Acción</th></tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100" id="admin-equipment-table-body"></tbody>
                             </table>
@@ -382,7 +382,7 @@
                     <div id="admin-logs-panel" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hidden">
                         <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
                             <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="history" class="text-blue-600 w-5 h-5"></i> Registro Histórico de Bitácoras</h3>
-                            <button onclick="app.printClientDashboard()" class="text-slate-600 hover:text-slate-800 text-sm font-medium border px-3 py-1 bg-white rounded flex items-center gap-1"><i data-lucide="printer" class="w-4 h-4"></i> Reporte Global</button>
+                            <button onclick="window.app.printClientDashboard()" class="text-slate-600 hover:text-slate-800 text-sm font-medium border px-3 py-1 bg-white rounded flex items-center gap-1"><i data-lucide="printer" class="w-4 h-4"></i> Reporte Global</button>
                         </div>
                         <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
                             <table class="w-full text-sm text-left">
@@ -415,7 +415,7 @@
                 <div class="p-6">
                     <p id="confirm-message" class="text-slate-700 mb-6 text-sm">¿Está seguro de que desea realizar esta acción?</p>
                     <div class="flex justify-end gap-2">
-                        <button type="button" onclick="app.closeConfirmModal()" class="px-4 py-2 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 text-sm font-medium">Cancelar</button>
+                        <button type="button" onclick="window.app.closeConfirmModal()" class="px-4 py-2 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 text-sm font-medium">Cancelar</button>
                         <button type="button" id="confirm-action-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700">Sí, Confirmar</button>
                     </div>
                 </div>
@@ -428,10 +428,10 @@
                     <h3 class="font-bold">Editar Usuario</h3>
                     <button type="button" onclick="document.getElementById('modal-edit-user').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button>
                 </div>
-                <form onsubmit="app.saveEditUser(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.saveEditUser(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-u-id">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="edit-u-name" required class="w-full border rounded p-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo Autorizado (Login)</label><input type="email" id="edit-u-email" required class="w-full border rounded p-2 text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo Autorizado</label><input type="email" id="edit-u-email" required class="w-full border rounded p-2 text-sm"></div>
                     <div>
                         <label class="block text-xs font-medium text-slate-600 mb-1">Rol</label>
                         <select id="edit-u-role" required class="w-full border rounded p-2 text-sm bg-white" onchange="document.getElementById('edit-u-client-container').style.display = this.value === 'cliente' ? 'block' : 'none'">
@@ -455,7 +455,7 @@
         <div id="modal-add-client" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Cliente</h3><button type="button" onclick="document.getElementById('modal-add-client').classList.add('hidden')" class="p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <form onsubmit="app.addClient(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.addClient(event)" class="p-6 space-y-4">
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label><input type="text" id="add-c-name" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Dirección</label><input type="text" id="add-c-address" required class="w-full border rounded p-2"></div>
                     <div class="grid grid-cols-2 gap-4">
@@ -473,7 +473,7 @@
         <div id="modal-edit-client" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Cliente</h3><button type="button" onclick="document.getElementById('modal-edit-client').classList.add('hidden')" class="p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <form onsubmit="app.saveEditClient(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.saveEditClient(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-c-id">
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label><input type="text" id="edit-c-name" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Dirección</label><input type="text" id="edit-c-address" required class="w-full border rounded p-2"></div>
@@ -491,10 +491,10 @@
 
         <div id="modal-add-eq" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
-                <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Equipo (Nube)</h3><button type="button" onclick="document.getElementById('modal-add-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
+                <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Equipo (Ficha Técnica)</h3><button type="button" onclick="document.getElementById('modal-add-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
+                <form onsubmit="window.app.saveEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="add-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="add-eq-key" class="w-full border rounded p-2 text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="add-eq-key" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Tipo</label><select id="add-eq-type" required class="w-full border rounded p-2 text-sm bg-white"><option value="">Seleccione...</option><option>Minisplit</option><option>Paquete / RoofTop</option><option>Dividido</option><option>Chiller</option></select></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Marca</label><input type="text" id="add-eq-brand" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Ubicación</label><input type="text" id="add-eq-location" required class="w-full border rounded p-2 text-sm"></div>
@@ -518,10 +518,10 @@
         <div id="modal-edit-eq" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Ficha del Equipo</h3><button type="button" onclick="document.getElementById('modal-edit-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveEditEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
+                <form onsubmit="window.app.saveEditEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
                     <input type="hidden" id="edit-eq-id">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="edit-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="edit-eq-key" class="w-full border rounded p-2 text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="edit-eq-key" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Tipo</label><select id="edit-eq-type" required class="w-full border rounded p-2 text-sm bg-white"><option value="">Seleccione...</option><option>Minisplit</option><option>Paquete / RoofTop</option><option>Dividido</option><option>Chiller</option></select></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Marca</label><input type="text" id="edit-eq-brand" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Ubicación</label><input type="text" id="edit-eq-location" required class="w-full border rounded p-2 text-sm"></div>
@@ -536,7 +536,7 @@
                     </div>
                     <div class="col-span-2 text-right mt-2 pt-4 border-t border-slate-100">
                         <button type="button" onclick="document.getElementById('modal-edit-eq').classList.add('hidden')" class="px-4 py-2 text-slate-600">Cancelar</button>
-                        <button type="submit" class="bg-slate-800 text-white px-6 py-2 rounded font-bold text-sm">Actualizar</button>
+                        <button type="submit" class="bg-slate-800 text-white px-6 py-2 rounded font-bold text-sm">Actualizar Información Fija</button>
                     </div>
                 </form>
             </div>
@@ -545,7 +545,7 @@
         <div id="modal-schedule-service" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Agendar Servicio</h3><button type="button" onclick="document.getElementById('modal-schedule-service').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveScheduledService(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.saveScheduledService(event)" class="p-6 space-y-4">
                     <input type="hidden" id="schedule-eq-id">
                     <div><label class="block text-sm font-medium mb-1">Fecha</label><input type="date" id="schedule-date" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium mb-1">Notas / Motivo</label><textarea id="schedule-notes" class="w-full border rounded p-2" rows="2"></textarea></div>
@@ -560,7 +560,7 @@
         <div id="modal-edit-service" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Cita Programada</h3><button type="button" onclick="document.getElementById('modal-edit-service').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveEditService(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.saveEditService(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-s-id">
                     <div><label class="block text-sm font-medium mb-1">Fecha</label><input type="date" id="edit-s-date" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium mb-1">Notas</label><textarea id="edit-s-notes" class="w-full border rounded p-2" rows="2"></textarea></div>
@@ -600,19 +600,18 @@
     </div>
 
     <script>
-        // 1. Configuración de Supabase cargada desde el CDN en el <head>
+        // 1. Configuración de Supabase
         const SUPABASE_URL = 'https://fdpravuvrwcgozbdhuua.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkcHJhdnV2cndjZ296YmRodXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NDc3MDYsImV4cCI6MjA4NzIyMzcwNn0.R0M8rZp9iBzrzybIQmIqPDcpAJXMjVwnORe5UmcB5Vg'; 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // 2. PIN MAESTRO DE SEGURIDAD EMPRESARIAL
+        // 2. PIN MAESTRO DE SEGURIDAD
         const PIN_EMPRESA = 'BISONTE2026';
 
         const hvacComponents = ["Serpentín Evaporador", "Serpentín Condensador", "Filtros de Aire", "Turbina / Ventilador", "Motor Condensadora", "Compresor", "Tarjeta PCB", "Capacitores", "Charola / Drenaje", "Aislamiento"];
 
         const appDB = {
             users: [
-                // Usuario inicial por defecto en caso de no haber conexion a la nube aun
                 { id: 'u1', name: 'Israel Ramirez Bolaños', email: 'israelrbolanos@bisonteingenieria.com', role: 'admin' }
             ],
             clients: [],
@@ -626,15 +625,16 @@
             views: ['login', 'tech-home', 'tech-form', 'client', 'users', 'clients-admin'],
             currentSelectedClientId: null,
             confirmCallback: null,
-            dbLoaded: false,
 
             init: async function() {
-                // Antes de mostrar nada, intentamos cargar de local y sincronizar
                 this.loadDB();
+                this.renderComponentsTable();
+                
+                // Intento de precarga silenciosa antes del login
                 try {
                     await this.sincronizarNubeSilenciosa();
                 } catch(e) {
-                    console.warn("Iniciando modo offline");
+                    console.log("Iniciando en modo offline temporal.");
                 }
             },
 
@@ -660,7 +660,7 @@
                 }
             },
 
-            // Sincronización silenciosa para el inicio (antes del login)
+            // Descarga silenciosa (no bloquea el HTML ni saca carteles molestos)
             sincronizarNubeSilenciosa: async function() {
                 const [resU, resC, resE, resL] = await Promise.all([
                     supabaseClient.from('usuarios_app').select('*'),
@@ -669,25 +669,42 @@
                     supabaseClient.from('bitacoras').select('*')
                 ]);
 
-                if(resU.data && resU.data.length > 0) appDB.users = resU.data.map(u => ({id: u.id, name: u.name, email: u.email, role: u.role, clientId: u.client_id}));
-                if(resC.data) appDB.clients = resC.data.map(c => ({id: c.id, name: c.name, address: c.address, startDate: c.start_date, frequency: c.frequency}));
-                if(resE.data) appDB.equipments = resE.data.map(e => ({id: e.id, clientId: e.client_id, unitId: e.unit_id, key: e.key_id, type: e.type, brand: e.brand, location: e.location, capacity: e.capacity, gas: e.gas, itm: e.itm, polos: e.polos, status: e.status}));
-                
-                if(resL.data) {
+                if (resU.data && resU.data.length > 0) {
+                    appDB.users = resU.data.map(u => ({
+                        id: u.id, name: u.name, email: u.email, role: u.role, clientId: u.client_id
+                    }));
+                }
+
+                if (resC.data && resC.data.length > 0) {
+                    appDB.clients = resC.data.map(c => ({
+                        id: c.id, name: c.name, address: c.address, startDate: c.start_date, frequency: c.frequency
+                    }));
+                }
+
+                if (resE.data && resE.data.length > 0) {
+                    appDB.equipments = resE.data.map(e => ({
+                        id: e.id, clientId: e.client_id, unitId: e.unit_id, key: e.key_id, type: e.type, 
+                        brand: e.brand, location: e.location, capacity: e.capacity, gas: e.gas, 
+                        itm: e.itm, polos: e.polos, status: e.status, lastPreventiveDate: null, correctiveDetails: null
+                    }));
+                }
+
+                if (resL.data) {
                     let logsData = resL.data;
                     logsData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
                     appDB.logs = logsData.map(l => {
-                        const eqLocal = appDB.equipments.find(e => e.unitId === l.eq_id && e.clientId === l.client_id);
+                        // Buscar el equipo de manera segura y flexible
+                        const eqLocal = appDB.equipments.find(e => e.id == l.eq_id || e.unitId === l.eq_id);
+
                         const fecha = new Date(l.created_at);
-                        
                         let parsedComps = [];
                         try { parsedComps = typeof l.components_json === 'string' ? JSON.parse(l.components_json) : l.components_json; } catch(e){}
 
                         const logObj = {
                             id: l.id,
-                            eqId: eqLocal ? eqLocal.id : l.eq_id,
-                            clientId: l.client_id,
+                            eqId: eqLocal ? eqLocal.id : l.eq_id, // Siempre asignamos el ID numérico si existe
+                            clientId: l.client_id || (eqLocal ? eqLocal.clientId : 1),
                             techName: l.tech_name,
                             date: `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`,
                             time: fecha.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
@@ -708,20 +725,28 @@
                     });
                 }
                 this.saveDB();
-                this.dbLoaded = true;
             },
 
-            // Sincronización con avisos UI (para cuando ya estás dentro)
-            sincronizarTodo: async function() {
-                this.showToast("Actualizando datos desde la nube...", "info");
-                await this.sincronizarNubeSilenciosa();
-                this.renderUsersTable();
-                this.renderClientsSelectors();
-                if (this.currentSelectedClientId) {
-                    const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
-                    if (isTechView) this.updateClientUI('tech', this.currentSelectedClientId);
-                    else if (!document.getElementById('view-clients-admin').classList.contains('hidden-view')) this.updateClientUI('admin', this.currentSelectedClientId);
-                    else this.loadClientDashboard(this.currentSelectedClientId);
+            // Descarga visual que actualiza las tablas
+            sincronizarTodo: async function(showAviso = true) {
+                try {
+                    if(showAviso) this.showToast("Sincronizando con Bisonte Cloud...", "info");
+                    
+                    await this.sincronizarNubeSilenciosa();
+
+                    if (this.currentUser) {
+                        this.renderUsersTable();
+                        this.renderClientsSelectors();
+                        if (this.currentSelectedClientId) {
+                            const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
+                            if (isTechView) this.updateClientUI('tech', this.currentSelectedClientId);
+                            else if (!document.getElementById('view-clients-admin').classList.contains('hidden-view')) this.updateClientUI('admin', this.currentSelectedClientId);
+                            else this.loadClientDashboard(this.currentSelectedClientId);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error sincronizando:", err);
+                    if(showAviso) this.showToast("Usando datos locales temporales.", "error");
                 }
             },
 
@@ -734,8 +759,8 @@
                     return this.showToast('PIN de empresa incorrecto.', 'error');
                 }
 
-                // Por si la app acaba de abrirse, aseguramos tener datos recientes
-                if(!this.dbLoaded) await this.sincronizarNubeSilenciosa();
+                // Carga rápida por si creaste un usuario hace 2 segundos
+                await this.sincronizarNubeSilenciosa();
 
                 const userFound = appDB.users.find(u => u.email.toLowerCase() === emailInput);
                 
@@ -794,7 +819,7 @@
             },
 
             createNavLink: function(text, target, icon) {
-                return `<button onclick="app.switchView('${target}')" class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-blue-100 hover:bg-blue-800"><i data-lucide="${icon}" class="w-4 h-4"></i> ${text}</button>`;
+                return `<button onclick="window.app.switchView('${target}')" class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-blue-100 hover:bg-blue-800"><i data-lucide="${icon}" class="w-4 h-4"></i> ${text}</button>`;
             },
 
             switchView: function(viewId) {
@@ -822,28 +847,34 @@
                     if (this.confirmCallback) this.confirmCallback();
                 };
             },
+            
             closeConfirmModal: function() {
                 document.getElementById('modal-confirm').classList.add('hidden');
                 this.confirmCallback = null;
             },
 
-            // --- CRUD EN SUPABASE ---
+            // --- C.R.U.D SUPABASE ---
             addUser: async function(e) {
                 e.preventDefault();
                 const name = document.getElementById('new-user-name').value;
                 const email = document.getElementById('new-user-email').value.toLowerCase();
                 const role = document.getElementById('new-user-role').value;
-                const clientId = role === 'cliente' ? document.getElementById('new-user-client-id').value : null;
+                const clientId = role === 'cliente' ? parseInt(document.getElementById('new-user-client-id').value) : null;
                 
                 if(appDB.users.some(u => u.email === email)) return this.showToast('Correo ya registrado', 'error');
-                if (role === 'cliente' && !clientId) return this.showToast('Debe asignar un cliente.', 'error');
+                if (role === 'cliente' && (!clientId || isNaN(clientId))) {
+                    return this.showToast('Debe asignar un cliente.', 'error');
+                }
 
-                const { error } = await supabaseClient.from('usuarios_app').insert([{name, email, role, client_id: clientId}]);
+                const { error } = await supabaseClient.from('usuarios_app').insert([{
+                    name: name, email: email, role: role, client_id: clientId
+                }]);
+
                 if(!error) {
-                    this.showToast('Usuario creado en la nube.', 'success');
+                    this.showToast('Usuario creado en Supabase.', 'success');
                     e.target.reset();
                     document.getElementById('client-select-container').style.display = 'none';
-                    this.sincronizarTodo();
+                    this.sincronizarTodo(true);
                 } else this.showToast(error.message, 'error');
             },
 
@@ -855,7 +886,9 @@
                     document.getElementById('edit-u-email').value = u.email;
                     document.getElementById('edit-u-role').value = u.role;
                     document.getElementById('edit-u-client-container').style.display = u.role === 'cliente' ? 'block' : 'none';
-                    if(u.role === 'cliente' && u.clientId) document.getElementById('edit-u-client-id').value = u.clientId;
+                    if(u.role === 'cliente' && u.clientId) {
+                        document.getElementById('edit-u-client-id').value = u.clientId;
+                    }
                     document.getElementById('modal-edit-user').classList.remove('hidden');
                 }
             },
@@ -864,7 +897,7 @@
                 e.preventDefault();
                 const id = document.getElementById('edit-u-id').value;
                 const role = document.getElementById('edit-u-role').value;
-                const clientId = role === 'cliente' ? document.getElementById('edit-u-client-id').value : null;
+                const clientId = role === 'cliente' ? parseInt(document.getElementById('edit-u-client-id').value) : null;
                 
                 const updates = {
                     name: document.getElementById('edit-u-name').value,
@@ -874,19 +907,20 @@
                 };
 
                 const { error } = await supabaseClient.from('usuarios_app').update(updates).eq('id', id);
+                
                 if(!error) {
                     document.getElementById('modal-edit-user').classList.add('hidden');
-                    this.showToast('Usuario actualizado en nube.', 'success');
-                    this.sincronizarTodo();
+                    this.showToast('Usuario actualizado.', 'success');
+                    this.sincronizarTodo(true);
                 } else this.showToast(error.message, 'error');
             },
 
             requestDeleteUser: function(userId) {
-                this.openConfirmModal('¿Está seguro de eliminar a este usuario de la base de datos?', async () => {
+                this.openConfirmModal('¿Está seguro de eliminar permanentemente a este usuario?', async () => {
                     const { error } = await supabaseClient.from('usuarios_app').delete().eq('id', userId);
                     if(!error) {
                         this.showToast('Usuario eliminado.', 'success');
-                        this.sincronizarTodo();
+                        this.sincronizarTodo(true);
                     }
                 });
             },
@@ -896,8 +930,8 @@
                 let html = '';
                 appDB.users.forEach(u => {
                     let roleStr = u.role === 'cliente' ? `Cliente (${appDB.clients.find(c=>c.id==u.clientId)?.name || 'Desconocido'})` : u.role;
-                    let editBtn = `<button onclick="app.openEditUserModal('${u.id}')" class="text-blue-600 hover:text-blue-800 p-1 bg-blue-50 rounded mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>`;
-                    let delBtn = u.id === 'u1' ? '' : `<button onclick="app.requestDeleteUser('${u.id}')" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+                    let editBtn = `<button onclick="window.app.openEditUserModal('${u.id}')" class="text-blue-600 hover:text-blue-800 p-1 bg-blue-50 rounded mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>`;
+                    let delBtn = u.id === 'u1' ? '' : `<button onclick="window.app.requestDeleteUser('${u.id}')" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
                     html += `<tr class="border-b hover:bg-slate-50"><td class="px-6 py-3 font-medium">${u.name}</td><td class="px-6 py-3">${u.email}</td><td class="px-6 py-3 capitalize">${roleStr}</td><td class="px-6 py-3 text-right whitespace-nowrap">${editBtn}${delBtn}</td></tr>`;
                 });
                 tbody.innerHTML = html;
@@ -921,13 +955,36 @@
                     start_date: document.getElementById('add-c-date').value,
                     frequency: document.getElementById('add-c-freq').value
                 };
-                const { error } = await supabaseClient.from('clientes').insert([obj]);
-                if(!error) {
-                    this.showToast("Cliente guardado en la nube.", "success");
+                
+                const { data, error } = await supabaseClient.from('clientes').insert([obj]).select();
+                
+                if(!error && data) {
+                    this.showToast('Cliente guardado en Supabase.', 'success');
                     document.getElementById('modal-add-client').classList.add('hidden');
                     e.target.reset();
-                    this.sincronizarTodo();
-                } else this.showToast(error.message, "error");
+                    
+                    // Auto-programar agenda en LocalStorage
+                    const newClient = data[0];
+                    let baseDate = new Date(newClient.start_date + 'T12:00:00');
+                    let count = newClient.frequency === 'Mensual' ? 12 : (newClient.frequency === 'Trimestral' ? 4 : (newClient.frequency === 'Semestral' ? 2 : 1));
+                    let monthsToAdd = newClient.frequency === 'Mensual' ? 1 : (newClient.frequency === 'Trimestral' ? 3 : (newClient.frequency === 'Semestral' ? 6 : 12));
+
+                    for(let i=1; i<=count; i++) {
+                        let nextDate = new Date(baseDate);
+                        nextDate.setMonth(baseDate.getMonth() + (monthsToAdd * i));
+                        appDB.services.push({
+                            id: Date.now() + i,
+                            clientId: newClient.id,
+                            eqId: null,
+                            date: nextDate.toISOString().split('T')[0],
+                            notes: `Sugerido: Mantenimiento ${newClient.frequency} (${i}/${count})`,
+                            status: 'pending',
+                            reminderSent: false
+                        });
+                    }
+                    this.saveDB();
+                    this.sincronizarTodo(true);
+                } else this.showToast(error.message, 'error');
             },
 
             openEditClientModal: function() {
@@ -952,22 +1009,25 @@
                     start_date: document.getElementById('edit-c-date').value,
                     frequency: document.getElementById('edit-c-freq').value
                 };
+
                 const { error } = await supabaseClient.from('clientes').update(updates).eq('id', id);
                 if(!error) {
                     document.getElementById('modal-edit-client').classList.add('hidden');
                     this.showToast('Información del cliente actualizada.', 'success');
-                    this.sincronizarTodo();
+                    this.sincronizarTodo(true);
                 }
             },
 
             requestDeleteClient: function() {
                 if(!this.currentSelectedClientId) return;
-                this.openConfirmModal('⚠️ ¿Eliminar cliente? Se borrarán en cascada todos sus equipos e historial de la nube.', async () => {
+                this.openConfirmModal('⚠️ ¿Eliminar cliente? Se borrarán en cascada todos sus equipos, historial de bitácoras y cuentas en la nube.', async () => {
                     const { error } = await supabaseClient.from('clientes').delete().eq('id', this.currentSelectedClientId);
                     if(!error) {
                         this.currentSelectedClientId = null;
-                        this.showToast('Cliente purgado de la base de datos.', 'success');
-                        this.sincronizarTodo();
+                        document.getElementById('admin-client-selector').value = "";
+                        this.updateClientUI('admin', null);
+                        this.showToast('Cliente y dependencias purgados.', 'success');
+                        this.sincronizarTodo(true);
                     }
                 });
             },
@@ -1009,55 +1069,140 @@
                 }
             },
 
-            // --- AGENDA LOCAL (Sin DB) ---
+            // --- AGENDA LOCAL ---
             openScheduleModal: function(eqId = null) {
                 if(!this.currentSelectedClientId) return this.showToast('Primero seleccione un cliente.', 'error');
+                
                 document.getElementById('schedule-date').value = '';
                 document.getElementById('schedule-eq-id').value = eqId || '';
+                
                 const noteInput = document.getElementById('schedule-notes');
                 if(eqId) {
                     const eq = appDB.equipments.find(e => e.id == eqId);
-                    noteInput.value = `Revisión - Equipo: ${eq ? eq.unitId : ''}`;
-                } else noteInput.value = '';
+                    noteInput.value = `Correctivo / Revisión Especial - Equipo: ${eq ? eq.unitId : ''}`;
+                } else {
+                    noteInput.value = '';
+                }
+                
                 document.getElementById('modal-schedule-service').classList.remove('hidden');
             },
+
+            openEditServiceModal: function(serviceId) {
+                const s = appDB.services.find(x => x.id === serviceId);
+                if(s) {
+                    document.getElementById('edit-s-id').value = s.id;
+                    document.getElementById('edit-s-date').value = s.date;
+                    document.getElementById('edit-s-notes').value = s.notes;
+                    document.getElementById('modal-edit-service').classList.remove('hidden');
+                }
+            },
+
+            saveEditService: function(e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('edit-s-id').value);
+                const s = appDB.services.find(x => x.id === id);
+                if(s) {
+                    s.date = document.getElementById('edit-s-date').value;
+                    s.notes = document.getElementById('edit-s-notes').value;
+                    this.saveDB();
+                    document.getElementById('modal-edit-service').classList.add('hidden');
+                    this.showToast('Fecha reprogramada correctamente.', 'success');
+                    this.renderClientServices('admin-alarms-list', s.clientId, true);
+                }
+            },
+
             saveScheduledService: function(e) {
                 e.preventDefault();
+                const eqIdVal = document.getElementById('schedule-eq-id').value;
                 const newService = {
                     id: Date.now(),
                     clientId: parseInt(this.currentSelectedClientId),
+                    eqId: eqIdVal ? parseInt(eqIdVal) : null,
                     date: document.getElementById('schedule-date').value,
                     notes: document.getElementById('schedule-notes').value,
-                    status: 'pending', reminderSent: false
+                    status: 'pending',
+                    reminderSent: false
                 };
                 appDB.services.push(newService);
                 document.getElementById('modal-schedule-service').classList.add('hidden');
                 this.saveDB();
+                this.showToast('Servicio programado localmente.', 'success');
                 this.renderClientServices('admin-alarms-list', this.currentSelectedClientId, true);
             },
+            
             requestDeleteService: function(serviceId) {
-                this.openConfirmModal('¿Eliminar esta fecha programada?', () => {
-                    appDB.services = appDB.services.filter(s => s.id !== serviceId);
-                    this.saveDB();
-                    this.renderClientServices('admin-alarms-list', this.currentSelectedClientId, true);
+                this.openConfirmModal('⚠️ ¿Está seguro de eliminar esta fecha programada de la agenda?', () => {
+                    const service = appDB.services.find(s => s.id === serviceId);
+                    if(service) {
+                        appDB.services = appDB.services.filter(s => s.id !== serviceId);
+                        this.saveDB();
+                        this.showToast('Fecha eliminada de la agenda.', 'success');
+                        this.renderClientServices('admin-alarms-list', service.clientId, true);
+                    }
                 });
             },
+
+            sendReminder: function(serviceId) {
+                const service = appDB.services.find(s => s.id === serviceId);
+                if(service) {
+                    if (service.reminderSent) return this.showToast('Recordatorio ya marcado como enviado.', 'info');
+                    
+                    const clientUsers = appDB.users.filter(u => u.role === 'cliente' && u.clientId == service.clientId).map(u => u.email);
+                    const adminUsers = appDB.users.filter(u => u.role === 'admin').map(u => u.email);
+                    const allEmails = [...clientUsers, ...adminUsers].join(',');
+                    
+                    const clientInfo = appDB.clients.find(c => c.id == service.clientId);
+                    const eqInfo = service.eqId ? appDB.equipments.find(e => e.id == service.eqId) : null;
+                    
+                    const subject = encodeURIComponent(`Recordatorio de Servicio HVAC - ${clientInfo ? clientInfo.name : 'Cliente'}`);
+                    let bodyText = `Hola,\n\nEste es un recordatorio automático para su próximo servicio de mantenimiento HVAC.\n\nFecha Programada: ${service.date}\nDetalles/Notas: ${service.notes}\n`;
+                    if(eqInfo) bodyText += `\nAtención requerida al Equipo: ${eqInfo.unitId} (${eqInfo.type})\n`;
+                    bodyText += `\nSaludos cordiales,\nBisonte Ingeniería.`;
+                    
+                    const body = encodeURIComponent(bodyText);
+                    window.location.href = `mailto:${allEmails}?subject=${subject}&body=${body}`;
+                    
+                    service.reminderSent = true;
+                    this.saveDB();
+                    this.showToast('¡Recordatorio preparado y marcado como enviado!', 'success');
+                    this.renderClientServices('admin-alarms-list', service.clientId, true);
+                }
+            },
+
             renderClientServices: function(containerId, clientId, isAdmin) {
                 const container = document.getElementById(containerId);
                 const services = appDB.services.filter(s => s.clientId == clientId).sort((a,b) => new Date(a.date) - new Date(b.date));
                 if (services.length === 0) return container.innerHTML = '<p class="text-sm text-slate-500">Sin servicios.</p>';
+                
                 let html = '';
                 services.forEach(s => {
                     const d = new Date(s.date + 'T12:00:00');
+                    const month = d.toLocaleString('es-ES', { month: 'short' });
+                    const day = d.getDate();
                     const statusClass = s.status === 'completed' ? 'bg-slate-50' : 'bg-amber-50';
-                    const delBtn = isAdmin ? `<button onclick="app.requestDeleteService(${s.id})" class="p-1 border rounded bg-white hover:bg-red-50 ml-1 text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '';
-                    html += `<div class="flex gap-3 items-center p-2 ${statusClass} border"><div class="bg-white border text-center w-12 py-1 font-bold">${d.getDate()}</div><div class="flex-1 text-sm font-bold truncate">${s.notes}</div>${delBtn}</div>`;
+                    
+                    const reminderIcon = s.reminderSent ? '<i data-lucide="check-check" class="w-4 h-4 text-green-600"></i>' : '<i data-lucide="bell" class="w-4 h-4 text-blue-600"></i>';
+                    const reminderBtn = isAdmin ? `<button onclick="window.app.sendReminder(${s.id})" class="p-1.5 border rounded bg-white hover:bg-slate-50 transition-colors ml-2" title="Enviar Recordatorio por Correo">${reminderIcon}</button>` : '';
+                    const editBtn = isAdmin ? `<button onclick="window.app.openEditServiceModal(${s.id})" class="p-1.5 border rounded bg-white hover:bg-slate-50 transition-colors ml-1" title="Editar Fecha"><i data-lucide="edit-2" class="w-4 h-4 text-slate-600"></i></button>` : '';
+                    const delBtn = isAdmin ? `<button onclick="window.app.requestDeleteService(${s.id})" class="p-1.5 border rounded bg-white hover:bg-red-50 transition-colors ml-1 text-red-600" title="Eliminar Fecha"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '';
+                    
+                    const iconType = s.eqId ? 'wrench' : 'clock';
+                    const iconColor = s.eqId ? 'text-red-600' : 'text-slate-500';
+
+                    html += `
+                        <div class="flex gap-3 items-center p-2 ${statusClass} rounded border">
+                            <div class="bg-white border rounded text-center w-12 py-1"><span class="block text-[10px] font-bold uppercase">${month}</span><span class="block text-lg font-black leading-none">${day}</span></div>
+                            <div class="flex-1 min-w-0"><p class="text-sm font-bold truncate">${s.notes}</p><p class="text-xs ${iconColor} mt-1 flex items-center gap-1"><i data-lucide="${iconType}" class="w-3 h-3"></i> ${s.status==='pending'?'Programado':'Completado'}</p></div>
+                            ${reminderBtn}
+                            ${editBtn}
+                            ${delBtn}
+                        </div>
+                    `;
                 });
                 container.innerHTML = html;
                 lucide.createIcons();
             },
 
-            // --- EQUIPOS SUPABASE ---
             openAddEquipmentModal: function() {
                 if(!this.currentSelectedClientId) return this.showToast('Seleccione un cliente primero.', 'error');
                 document.getElementById('modal-add-eq').classList.remove('hidden');
@@ -1066,8 +1211,8 @@
             saveEquipment: async function(e) {
                 e.preventDefault();
                 const obj = {
-                    client_id: this.currentSelectedClientId,
-                    unit_id: document.getElementById('add-eq-unitId').value.toUpperCase(),
+                    client_id: parseInt(this.currentSelectedClientId),
+                    unit_id: document.getElementById('add-eq-unitId').value,
                     key_id: document.getElementById('add-eq-key').value,
                     type: document.getElementById('add-eq-type').value,
                     brand: document.getElementById('add-eq-brand').value,
@@ -1077,13 +1222,14 @@
                     itm: document.getElementById('add-eq-itm').value,
                     polos: document.getElementById('add-eq-polos').value
                 };
+
                 const { error } = await supabaseClient.from('equipos').insert([obj]);
                 if(!error) {
-                    this.showToast('Equipo guardado en la nube.', 'success');
+                    this.showToast('Ficha técnica de equipo creada en Supabase.', 'success');
                     document.getElementById('modal-add-eq').classList.add('hidden');
                     e.target.reset();
-                    this.sincronizarTodo();
-                } else this.showToast(error.message, "error");
+                    this.sincronizarTodo(true);
+                } else this.showToast(error.message, 'error');
             },
             
             openEditEquipmentModal: function(eqId) {
@@ -1107,7 +1253,7 @@
                 e.preventDefault();
                 const id = document.getElementById('edit-eq-id').value;
                 const updates = {
-                    unit_id: document.getElementById('edit-eq-unitId').value.toUpperCase(),
+                    unit_id: document.getElementById('edit-eq-unitId').value,
                     key_id: document.getElementById('edit-eq-key').value,
                     type: document.getElementById('edit-eq-type').value,
                     brand: document.getElementById('edit-eq-brand').value,
@@ -1117,110 +1263,29 @@
                     itm: document.getElementById('edit-eq-itm').value,
                     polos: document.getElementById('edit-eq-polos').value
                 };
-                
+
                 const { error } = await supabaseClient.from('equipos').update(updates).eq('id', id);
                 if(!error) {
                     document.getElementById('modal-edit-eq').classList.add('hidden');
-                    this.showToast('Equipo actualizado.', 'success');
-                    this.sincronizarTodo();
-                }
+                    this.showToast('Información actualizada en la nube.', 'success');
+                    this.sincronizarTodo(true);
+                } else this.showToast(error.message, 'error');
             },
 
             requestDeleteEquipment: function(eqId) {
-                this.openConfirmModal('⚠️ ¿Eliminar equipo de la nube?', async () => {
+                this.openConfirmModal('⚠️ ¿Eliminar este equipo de la nube permanentemente?', async () => {
                     const { error } = await supabaseClient.from('equipos').delete().eq('id', eqId);
                     if(!error) {
                         this.showToast('Equipo eliminado.', 'success');
-                        this.sincronizarTodo();
+                        this.sincronizarTodo(true);
                     }
                 });
-            },
-
-            renderEquipmentList: function(mode, eqs) {
-                const tbody = document.getElementById(`${mode}-equipment-table-body`);
-                let html = '';
-                eqs.forEach(eq => {
-                    let statusHtml = eq.status === 'Operativo' ? '<span class="text-green-600 bg-green-50 px-2 py-1 rounded text-[10px] border border-green-200 font-bold">Operativo</span>' : '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded text-[10px] border border-red-200">En Falla</span>';
-                    
-                    if (mode === 'admin') {
-                        html += `<tr class="border-b">
-                            <td class="px-4 py-3"><span class="font-bold block">${eq.unitId}</span><span class="text-[10px] text-slate-500">${eq.type} ${eq.brand}</span></td>
-                            <td class="px-4 py-3 text-xs">${eq.location}</td>
-                            <td class="px-4 py-3 text-xs">${eq.lastPreventiveDate||'N/A'}</td>
-                            <td class="px-4 py-3 text-xs text-red-600 max-w-[150px] truncate" title="${eq.correctiveDetails||''}">${eq.correctiveDetails||''}</td>
-                            <td class="px-4 py-3 text-right">
-                                <div class="flex flex-col items-end gap-1">
-                                    ${statusHtml}
-                                    <div class="flex gap-1 mt-1">
-                                        <button onclick="app.openEditEquipmentModal(${eq.id})" class="text-slate-600 border px-1 bg-white text-[10px]"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
-                                        <button onclick="app.requestDeleteEquipment(${eq.id})" class="text-red-600 border px-1 bg-red-50 text-[10px]"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>`;
-                    } else if (mode === 'client-dash') {
-                        html += `<tr class="border-b"><td class="px-4 py-3"><span class="font-bold">${eq.unitId}</span></td><td class="px-4 py-3 text-sm">${eq.location}</td><td class="px-4 py-3">${statusHtml}</td></tr>`;
-                    } else if (mode === 'tech') {
-                        html += `<tr class="border-b hover:bg-slate-50">
-                            <td class="px-4 py-3"><span class="font-bold block text-slate-700">${eq.unitId}</span><span class="text-[10px] text-slate-400">${eq.key||''}</span></td>
-                            <td class="px-4 py-3"><span class="font-medium text-slate-600 block text-xs">${eq.type}</span><span class="text-[10px] text-slate-400">${eq.brand}</span></td>
-                            <td class="px-4 py-3 text-xs text-slate-600">${eq.location}<br><span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-1 mt-1 inline-block rounded">${eq.gas||''} | ${eq.itm||''}A (${eq.polos||''}P)</span></td>
-                            <td class="px-4 py-3">${statusHtml}</td>
-                            <td class="px-4 py-3 text-right min-w-[130px]">
-                                <div class="flex flex-col gap-1">
-                                    <button onclick="app.openTechForm(${eq.id})" class="text-blue-700 border border-blue-200 px-2 py-1.5 rounded bg-blue-50 text-[11px] font-bold flex justify-center items-center gap-1"><i data-lucide="clipboard-pen" class="w-3 h-3"></i> Bitácora</button>
-                                    <button onclick="app.openEqHistory(${eq.id})" class="text-indigo-700 border border-indigo-200 px-2 py-1.5 rounded bg-indigo-50 text-[10px] font-bold flex justify-center items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Historial</button>
-                                    <button onclick="app.openEditEquipmentModal(${eq.id})" class="text-slate-600 border border-slate-200 px-2 py-1.5 rounded bg-white text-[10px] font-bold flex justify-center items-center gap-1"><i data-lucide="edit-2" class="w-3 h-3"></i> Editar Info</button>
-                                </div>
-                            </td>
-                        </tr>`;
-                    }
-                });
-                tbody.innerHTML = html;
-                if(mode === 'admin' || mode === 'tech') lucide.createIcons();
-            },
-
-            renderLogsTable: function(clientId, mode = 'admin') {
-                const tbody = document.getElementById(`${mode==='admin' ? 'admin-logs-table-body' : 'client-dash-logs'}`);
-                const logs = appDB.logs.filter(l => l.clientId == clientId).sort((a,b) => b.id - a.id);
-                
-                if(logs.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-500 text-sm">No hay bitácoras registradas.</td></tr>`;
-                    return;
-                }
-                
-                let html = '';
-                logs.forEach(l => {
-                    const eq = appDB.equipments.find(e => e.id == l.eqId);
-                    html += `
-                        <tr class="border-b hover:bg-slate-50">
-                            <td class="px-4 py-3 text-sm"><span class="font-bold text-slate-700">${l.date}</span> <span class="text-xs text-slate-500">${l.time}</span></td>
-                            <td class="px-4 py-3 text-sm text-slate-600"><i data-lucide="user" class="w-3 h-3 inline"></i> ${l.techName}</td>
-                            <td class="px-4 py-3 text-sm font-semibold">${eq?.unitId || 'Equipo Borrado'}</td>
-                            <td class="px-4 py-3 text-right">
-                                <button onclick="app.printLogReport(${l.id})" class="text-red-600 hover:text-red-800 border border-red-200 px-2 py-1 rounded bg-red-50 text-xs font-bold"><i data-lucide="file-pdf" class="w-3 h-3 inline"></i> PDF</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
-                lucide.createIcons();
-            },
-
-            loadClientDashboard: function(clientId) {
-                const client = appDB.clients.find(c => c.id == clientId);
-                if(!client) return;
-                document.getElementById('client-dash-name').textContent = `${client.name} | ${client.address}`;
-                this.renderClientServices('client-dash-agenda', clientId, false);
-                const eqs = appDB.equipments.filter(e => e.clientId == clientId);
-                this.renderEquipmentList('client-dash', eqs);
-                this.renderLogsTable(clientId, 'client-dash');
             },
 
             renderComponentsTable: function() {
                 const tbody = document.getElementById('components-list');
                 let html = '';
-                hvacComponents.forEach((comp) => {
+                hvacComponents.forEach((comp, i) => {
                     html += `
                         <tr class="border-b hover:bg-slate-50" data-comp="${comp}">
                             <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">${comp}</td>
@@ -1267,6 +1332,7 @@
                 if(!eq) return;
                 document.getElementById('history-eq-id').textContent = `${eq.unitId} (${eq.type})`;
                 
+                // Asegurar compatibilidad estricta de tipos de ID 
                 const logs = appDB.logs.filter(l => l.eqId == eqId).sort((a,b) => b.id - a.id);
                 const container = document.getElementById('history-list-container');
                 
@@ -1387,7 +1453,7 @@
                     }));
 
                     const { error: dbError } = await supabaseClient.from('bitacoras').insert([{
-                        eq_id: eq.unitId,
+                        eq_id: eq.unitId, // Aseguramos guardar el texto correcto
                         client_id: eq.clientId,
                         tech_name: this.currentUser.displayName,
                         volts: techData.volts,
@@ -1405,7 +1471,7 @@
 
                     if (dbError) throw dbError;
 
-                    await this.sincronizarTodo();
+                    await this.sincronizarTodo(false);
                     this.showToast("¡Bitácora guardada con éxito en la nube!", "success");
                     this.switchView('tech-home');
 
@@ -1582,7 +1648,7 @@
             }
         };
 
-        // EXPOSICIÓN GLOBAL
+        // EXPOSICIÓN GLOBAL ESTRICTA
         window.app = app;
         document.addEventListener('DOMContentLoaded', () => { app.init(); });
 
