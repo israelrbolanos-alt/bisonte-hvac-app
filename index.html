@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bisonte Ingeniería - App HVAC</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -227,7 +228,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-6 space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2"><i data-lucide="message-square" class="w-4 h-4 inline mr-1 text-blue-600"></i> Comentarios Generales del Técnico</label>
-                        <textarea id="tf-tech-comments" rows="2" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-blue-500 bg-slate-50" placeholder="Escriba observaciones sobre el funcionamiento, el servicio realizado, recomendaciones generales..."></textarea>
+                        <textarea id="tf-tech-comments" rows="2" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-blue-500 bg-slate-50" placeholder="Escriba observaciones sobre el funcionamiento, el servicio realizado..."></textarea>
                     </div>
                     
                     <div class="p-4 bg-red-50 border border-red-200 rounded-lg mt-4 transition-all">
@@ -304,7 +305,7 @@
                     <h3 class="font-bold text-slate-800 mb-4 border-b pb-2">Registrar Usuario</h3>
                     <form onsubmit="window.app.addUser(event)" class="space-y-4">
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="new-user-name" required class="w-full border rounded p-2 text-sm"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo Autorizado (Login)</label><input type="email" id="new-user-email" required class="w-full border rounded p-2 text-sm"></div>
+                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo Autorizado</label><input type="email" id="new-user-email" required class="w-full border rounded p-2 text-sm"></div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Rol</label>
                             <select id="new-user-role" required class="w-full border rounded p-2 text-sm bg-white" onchange="document.getElementById('client-select-container').style.display = this.value === 'cliente' ? 'block' : 'none'">
@@ -599,15 +600,13 @@
         </div>
     </div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
+    <script>
+        // 1. Configuración de Supabase
         const SUPABASE_URL = 'https://fdpravuvrwcgozbdhuua.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkcHJhdnV2cndjZ296YmRodXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NDc3MDYsImV4cCI6MjA4NzIyMzcwNn0.R0M8rZp9iBzrzybIQmIqPDcpAJXMjVwnORe5UmcB5Vg'; 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-        window.supabase = supabase;
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // PIN MAESTRO DE SEGURIDAD EMPRESARIAL
+        // 2. PIN MAESTRO DE SEGURIDAD
         const PIN_EMPRESA = 'BISONTE2026';
 
         const hvacComponents = ["Serpentín Evaporador", "Serpentín Condensador", "Filtros de Aire", "Turbina / Ventilador", "Motor Condensadora", "Compresor", "Tarjeta PCB", "Capacitores", "Charola / Drenaje", "Aislamiento"];
@@ -643,11 +642,11 @@
                 if (stored) {
                     try {
                         const parsed = JSON.parse(stored);
-                        appDB.users = parsed.users || appDB.users;
-                        appDB.clients = parsed.clients || appDB.clients;
-                        appDB.services = parsed.services || appDB.services;
-                        appDB.equipments = parsed.equipments || appDB.equipments;
-                        appDB.logs = parsed.logs || appDB.logs;
+                        if (parsed.users && parsed.users.length > 0) appDB.users = parsed.users;
+                        if (parsed.clients) appDB.clients = parsed.clients;
+                        if (parsed.services) appDB.services = parsed.services;
+                        if (parsed.equipments) appDB.equipments = parsed.equipments;
+                        if (parsed.logs) appDB.logs = parsed.logs;
                     } catch (e) { console.error("DB Load Error", e); }
                 }
             },
@@ -657,7 +656,7 @@
                     localStorage.setItem('bisonte_hvac_db', JSON.stringify(appDB));
                 } catch (e) {
                     console.error("DB Save Error", e);
-                    this.showToast("Memoria llena. Intente borrar historial antiguo.", "error");
+                    this.showToast("Memoria local llena.", "error");
                 }
             },
 
@@ -665,32 +664,51 @@
                 try {
                     this.showToast("Sincronizando reportes de la nube...", "info");
                     
-                    const { data, error } = await window.supabase.from('bitacoras').select('*');
+                    const { data, error } = await supabaseClient.from('bitacoras').select('*');
                     if (error) throw error;
 
-                    // Ordenar por fecha para que el estado del equipo se defina por la bitácora más reciente
+                    if (!data || data.length === 0) return; // Si la nube está vacía, no hacemos nada
+
+                    // Ordenar por fecha
                     data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
                     const logsNube = data.map(dbRow => {
-                        const eqLocal = appDB.equipments.find(e => e.unitId === dbRow.eq_id);
+                        // Limpieza extrema de ID para asegurar emparejamiento
+                        const eqIdText = (dbRow.eq_id || '').toString().trim().toUpperCase();
+                        const eqLocal = appDB.equipments.find(e => (e.unitId || '').toString().trim().toUpperCase() === eqIdText);
                         const fecha = dbRow.created_at ? new Date(dbRow.created_at) : new Date();
                         
+                        // Parseo seguro de componentes (a veces viene como string)
+                        let parsedComponents = [];
+                        if (dbRow.components_json) {
+                            if (typeof dbRow.components_json === 'string') {
+                                try { parsedComponents = JSON.parse(dbRow.components_json); } catch(e) {}
+                            } else {
+                                parsedComponents = dbRow.components_json;
+                            }
+                        }
+
+                        // Asignación segura de cliente
+                        let safeClientId = dbRow.client_id;
+                        if (!safeClientId && eqLocal) safeClientId = eqLocal.clientId;
+                        if (!safeClientId) safeClientId = this.currentSelectedClientId || 1;
+
                         const logObj = {
-                            id: dbRow.id,
-                            eqId: eqLocal ? eqLocal.id : dbRow.eq_id,
-                            clientId: dbRow.client_id,
-                            techName: dbRow.tech_name,
+                            id: dbRow.id || Date.now() + Math.random(),
+                            eqId: eqLocal ? eqLocal.id : eqIdText, // Asigna el ID numérico si existe
+                            clientId: safeClientId,
+                            techName: dbRow.tech_name || 'Técnico',
                             date: `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`,
                             time: fecha.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
-                            techComments: dbRow.tech_comments,
+                            techComments: dbRow.tech_comments || '',
                             photos: { before: dbRow.foto_before, during: dbRow.foto_during, after: dbRow.foto_after },
-                            data: { volts: dbRow.volts, amps: dbRow.amps, psi: dbRow.psi, temp: dbRow.temp },
-                            components: dbRow.components_json || [],
-                            needsCorrective: dbRow.needs_corrective,
-                            correctiveDetails: dbRow.corrective_details
+                            data: { volts: dbRow.volts||0, amps: dbRow.amps||0, psi: dbRow.psi||0, temp: dbRow.temp||0 },
+                            components: parsedComponents,
+                            needsCorrective: dbRow.needs_corrective || false,
+                            correctiveDetails: dbRow.corrective_details || ''
                         };
 
-                        // Actualizar estado del equipo automáticamente con la bitácora de la nube
+                        // Actualizar estado del equipo automáticamente
                         if (eqLocal) {
                             eqLocal.lastPreventiveDate = logObj.date;
                             if (logObj.needsCorrective) { 
@@ -707,6 +725,7 @@
                     appDB.logs = logsNube;
                     this.saveDB();
 
+                    // Forzar refresco de las tablas si hay un cliente seleccionado
                     if (this.currentSelectedClientId) {
                         const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
                         if (isTechView) this.updateClientUI('tech', this.currentSelectedClientId);
@@ -715,8 +734,8 @@
                     }
                     
                 } catch (err) {
-                    console.error(err);
-                    this.showToast("Error descargando de Supabase: " + err.message, "error");
+                    console.error("Error sincronizando:", err);
+                    this.showToast("Error descargando datos: " + err.message, "error");
                 }
             },
 
@@ -729,7 +748,6 @@
 
             handleLogin: function(e) {
                 e.preventDefault();
-                // .trim() soluciona los errores de espacios invisibles desde el teclado del celular
                 const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
                 const pinInput = document.getElementById('login-password').value.trim();
                 
@@ -752,7 +770,7 @@
                     document.getElementById('user-display-role').textContent = `Rol: ${userFound.role}`;
                     
                     this.updateNavigation();
-                    this.sincronizarNube();
+                    this.sincronizarNube(); // <-- LLAMADA CRÍTICA PARA TRAER REPORTES
                     
                     if(userFound.role === 'admin') this.switchView('clients-admin');
                     else if (userFound.role === 'tecnico') this.switchView('tech-home');
@@ -1031,7 +1049,7 @@
                         document.getElementById('ac-address').textContent = client.address;
                         document.getElementById('ac-frequency').textContent = client.frequency;
                         this.renderClientServices('admin-alarms-list', id, true);
-                        this.renderLogsTable(id);
+                        this.renderLogsTable(id); // Forzar renderizado de la tabla admin
                     } else {
                         document.getElementById('tech-client-address').textContent = client.address;
                     }
@@ -1318,7 +1336,8 @@
                 if(!eq) return;
                 document.getElementById('history-eq-id').textContent = `${eq.unitId} (${eq.type})`;
                 
-                const logs = appDB.logs.filter(l => l.eqId === eqId).sort((a,b) => b.id - a.id);
+                // Asegurar compatibilidad estricta de tipos de ID (número vs número)
+                const logs = appDB.logs.filter(l => l.eqId == eqId).sort((a,b) => b.id - a.id);
                 const container = document.getElementById('history-list-container');
                 
                 if(logs.length === 0) {
@@ -1418,10 +1437,10 @@
                             const blob = await fetch(imgElement.src).then(res => res.blob());
                             const fileName = `hvac-${Date.now()}-${id}.jpg`;
 
-                            const { error: uploadError } = await window.supabase.storage.from('evidencias').upload(fileName, blob);
+                            const { error: uploadError } = await supabaseClient.storage.from('evidencias').upload(fileName, blob);
                             if (uploadError) throw uploadError;
 
-                            const { data } = window.supabase.storage.from('evidencias').getPublicUrl(fileName);
+                            const { data } = supabaseClient.storage.from('evidencias').getPublicUrl(fileName);
                             urls[id] = data.publicUrl;
                         }
                     }
@@ -1442,8 +1461,8 @@
                         obs: tr.querySelector('.comp-obs').value
                     }));
 
-                    const { error: dbError } = await window.supabase.from('bitacoras').insert([{
-                        eq_id: document.getElementById('tf-display-id').textContent,
+                    const { error: dbError } = await supabaseClient.from('bitacoras').insert([{
+                        eq_id: document.getElementById('tf-display-id').textContent.trim(),
                         client_id: eq.clientId,
                         tech_name: this.currentUser.displayName,
                         volts: techData.volts,
@@ -1461,30 +1480,11 @@
 
                     if (dbError) throw dbError;
 
-                    const logEntry = {
-                        id: Date.now(),
-                        eqId: eq.id,
-                        clientId: eq.clientId,
-                        techName: this.currentUser.displayName,
-                        date: dateStr,
-                        time: now.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
-                        techComments: document.getElementById('tf-tech-comments').value,
-                        photos: localPhotos,
-                        data: techData,
-                        components: componentsData,
-                        needsCorrective: document.getElementById('tf-needs-corrective').checked,
-                        correctiveDetails: document.getElementById('tf-corrective-details').value
-                    };
+                    // Al tener éxito en la nube, llamamos a sincronizar para refrescar todo
+                    await this.sincronizarNube();
 
-                    appDB.logs.push(logEntry);
-                    eq.lastPreventiveDate = dateStr;
-                    if(logEntry.needsCorrective) { eq.status = 'Requiere Correctivo'; eq.correctiveDetails = logEntry.correctiveDetails; } 
-                    else { eq.status = 'Operativo'; eq.correctiveDetails = null; }
-
-                    this.saveDB();
-                    this.showToast("¡Bitácora guardada en la nube y en local!", "success");
+                    this.showToast("¡Bitácora guardada con éxito en la nube!", "success");
                     this.switchView('tech-home');
-                    this.updateClientUI('tech', eq.clientId);
 
                 } catch (err) {
                     console.error(err);
@@ -1543,9 +1543,14 @@
 
             renderLogsTable: function(clientId, mode = 'admin') {
                 const tbody = document.getElementById(`${mode==='admin' ? 'admin-logs-table-body' : 'client-dash-logs'}`);
+                
+                // Asegurarse de que el ID coincida aunque uno sea string y otro número
                 const logs = appDB.logs.filter(l => l.clientId == clientId).sort((a,b) => b.id - a.id);
                 
-                if(logs.length === 0) return tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-500 text-sm">No hay bitácoras registradas.</td></tr>`;
+                if(logs.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-500 text-sm">No hay bitácoras registradas.</td></tr>`;
+                    return;
+                }
                 
                 let html = '';
                 logs.forEach(l => {
@@ -1554,7 +1559,7 @@
                         <tr class="border-b hover:bg-slate-50">
                             <td class="px-4 py-3 text-sm"><span class="font-bold text-slate-700">${l.date}</span> <span class="text-xs text-slate-500">${l.time}</span></td>
                             <td class="px-4 py-3 text-sm text-slate-600"><i data-lucide="user" class="w-3 h-3 inline"></i> ${l.techName}</td>
-                            <td class="px-4 py-3 text-sm font-semibold">${eq?.unitId || 'N/A'}</td>
+                            <td class="px-4 py-3 text-sm font-semibold">${eq?.unitId || 'Equipo Borrado'}</td>
                             <td class="px-4 py-3 text-right">
                                 <button onclick="window.app.printLogReport(${l.id})" class="text-red-600 hover:text-red-800 border border-red-200 px-2 py-1 rounded bg-red-50 text-xs font-bold"><i data-lucide="file-pdf" class="w-3 h-3 inline"></i> PDF</button>
                             </td>
@@ -1590,16 +1595,18 @@
                     let badgeColor = eq.status === 'Operativo' ? 'text-green-600' : 'text-red-600 font-bold';
                     eqRows += `<tr class="border-b"><td class="py-1 font-bold">${eq.unitId}</td><td>${eq.type} ${eq.brand}</td><td>${eq.location}</td><td class="${badgeColor}">${eq.status}</td></tr>`;
                     
-                    const logs = appDB.logs.filter(l => l.eqId === eq.id).sort((a,b) => b.id - a.id);
+                    const logs = appDB.logs.filter(l => l.eqId == eq.id).sort((a,b) => b.id - a.id);
                     const latestLog = logs[0];
                     
                     if(latestLog) {
                         let compRows = '';
-                        latestLog.components.forEach(c => {
-                            let bgClass = (c.status === 'Malo' || c.status === 'Regular') ? 'bg-yellow-100' : '';
-                            let textClass = c.status === 'Bueno' ? 'text-green-600' : (c.status === 'Regular' ? 'text-amber-600' : 'text-red-600 font-bold');
-                            compRows += `<tr class="border-b ${bgClass}"><td class="py-0.5 px-1">${c.name}</td><td class="${textClass} px-1">${c.status}</td><td class="text-[10px] italic px-1">${c.obs||'-'}</td></tr>`;
-                        });
+                        if(latestLog.components && Array.isArray(latestLog.components)) {
+                            latestLog.components.forEach(c => {
+                                let bgClass = (c.status === 'Malo' || c.status === 'Regular') ? 'bg-yellow-100' : '';
+                                let textClass = c.status === 'Bueno' ? 'text-green-600' : (c.status === 'Regular' ? 'text-amber-600' : 'text-red-600 font-bold');
+                                compRows += `<tr class="border-b ${bgClass}"><td class="py-0.5 px-1">${c.name}</td><td class="${textClass} px-1">${c.status}</td><td class="text-[10px] italic px-1">${c.obs||'-'}</td></tr>`;
+                            });
+                        }
                         
                         let photosHtml = '';
                         if(latestLog.photos && (latestLog.photos.before || latestLog.photos.during || latestLog.photos.after)) {
@@ -1671,11 +1678,13 @@
                 document.getElementById('print-sign-tech').textContent = log.techName;
 
                 let compRows = '';
-                log.components.forEach(c => {
-                    let bgClass = (c.status === 'Malo' || c.status === 'Regular') ? 'bg-yellow-100' : '';
-                    let textClass = c.status === 'Bueno' ? 'text-green-600' : (c.status === 'Regular' ? 'text-amber-600' : 'text-red-600 font-bold');
-                    compRows += `<tr class="border-b ${bgClass}"><td class="py-1 px-2">${c.name}</td><td class="${textClass} px-2">${c.status}</td><td class="text-xs italic px-2">${c.obs||'-'}</td></tr>`;
-                });
+                if(log.components && Array.isArray(log.components)) {
+                    log.components.forEach(c => {
+                        let bgClass = (c.status === 'Malo' || c.status === 'Regular') ? 'bg-yellow-100' : '';
+                        let textClass = c.status === 'Bueno' ? 'text-green-600' : (c.status === 'Regular' ? 'text-amber-600' : 'text-red-600 font-bold');
+                        compRows += `<tr class="border-b ${bgClass}"><td class="py-1 px-2">${c.name}</td><td class="${textClass} px-2">${c.status}</td><td class="text-xs italic px-2">${c.obs||'-'}</td></tr>`;
+                    });
+                }
 
                 let photosHtml = '';
                 if(log.photos && (log.photos.before || log.photos.during || log.photos.after)) {
@@ -1694,9 +1703,9 @@
                 document.getElementById('print-content').innerHTML = `
                     <div class="flex justify-between bg-slate-100 p-4 rounded mb-4 border border-slate-300 text-sm">
                         <div>
-                            <p><strong>Cliente:</strong> ${client.name}</p>
-                            <p><strong>Equipo:</strong> ${eq.unitId} (${eq.type})</p>
-                            <p><strong>Ubicación:</strong> ${eq.location}</p>
+                            <p><strong>Cliente:</strong> ${client ? client.name : 'Desconocido'}</p>
+                            <p><strong>Equipo:</strong> ${eq ? eq.unitId : 'Desconocido'} (${eq ? eq.type : ''})</p>
+                            <p><strong>Ubicación:</strong> ${eq ? eq.location : 'Desconocido'}</p>
                         </div>
                         <div class="text-right">
                             <p><strong>Fecha Servicio:</strong> ${log.date} ${log.time}</p>
@@ -1710,8 +1719,8 @@
                         <div><span class="text-slate-500 block text-[10px]">Amperaje</span><b>${dAmps} A</b></div>
                         <div><span class="text-slate-500 block text-[10px]">Presión Gas</span><b>${dPsi} PSI</b></div>
                         <div><span class="text-slate-500 block text-[10px]">Temp Inyección</span><b>${dTemp} °C</b></div>
-                        <div><span class="text-slate-500 block text-[10px]">Refrigerante</span><b>${eq.gas || '-'}</b></div>
-                        <div><span class="text-slate-500 block text-[10px]">ITM</span><b>${eq.itm || '-'} A (${eq.polos||'-'}P)</b></div>
+                        <div><span class="text-slate-500 block text-[10px]">Refrigerante</span><b>${eq ? eq.gas : '-'}</b></div>
+                        <div><span class="text-slate-500 block text-[10px]">ITM</span><b>${eq ? eq.itm : '-'} A (${eq ? eq.polos : '-'}P)</b></div>
                     </div>
 
                     <h2 class="text-xs font-bold bg-blue-900 text-white p-1 px-2 mb-2">INSPECCIÓN DE COMPONENTES</h2>
@@ -1738,9 +1747,9 @@
             }
         };
 
-        // EXPOSICIÓN GLOBAL ESTRICTA (Permite que el HTML llame a las funciones)
+        // EXPOSICIÓN GLOBAL ESTRICTA
         window.app = app;
-        app.init();
+        document.addEventListener('DOMContentLoaded', () => { app.init(); });
 
     </script>
 </body>
