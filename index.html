@@ -668,7 +668,53 @@
                     this.showToast("Memoria llena. Intente borrar historial antiguo.", "error");
                 }
             },
+// --- NUEVA FUNCIÓN: DESCARGAR DE LA NUBE ---
+        sincronizarNube: async function() {
+            try {
+                this.showToast("Descargando historial de la nube...", "info");
+                
+                // Pedimos todos los registros a la tabla 'bitacoras'
+                const { data, error } = await window.supabase.from('bitacoras').select('*');
+                if (error) throw error;
 
+                // Traducimos los datos de Supabase al formato que usa tu app local
+                const logsNube = data.map(dbRow => {
+                    const eqLocal = appDB.equipments.find(e => e.unitId === dbRow.eq_id);
+                    const fecha = dbRow.created_at ? new Date(dbRow.created_at) : new Date();
+                    
+                    return {
+                        id: dbRow.id,
+                        eqId: eqLocal ? eqLocal.id : dbRow.eq_id,
+                        clientId: dbRow.client_id,
+                        techName: dbRow.tech_name,
+                        date: `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`,
+                        time: fecha.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
+                        techComments: dbRow.tech_comments,
+                        photos: { before: dbRow.foto_before, during: dbRow.foto_during, after: dbRow.foto_after },
+                        data: { volts: dbRow.volts, amps: dbRow.amps, psi: dbRow.psi, temp: dbRow.temp },
+                        components: dbRow.components_json || [],
+                        needsCorrective: dbRow.needs_corrective,
+                        correctiveDetails: dbRow.corrective_details
+                    };
+                });
+
+                // Reemplazamos la memoria local vieja con la información fresca de la nube
+                appDB.logs = logsNube;
+                this.saveDB();
+
+                // Refrescamos las pantallas para que aparezcan los nuevos datos
+                if (this.currentSelectedClientId) {
+                    const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
+                    if (isTechView) this.updateClientUI('tech', this.currentSelectedClientId);
+                    else if (!document.getElementById('view-clients-admin').classList.contains('hidden-view')) this.updateClientUI('admin', this.currentSelectedClientId);
+                    else this.loadClientDashboard(this.currentSelectedClientId);
+                }
+                
+            } catch (err) {
+                console.error(err);
+                this.showToast("Error descargando de Supabase: " + err.message, "error");
+            }
+        },    
             init: function() {
                 this.loadDB();
                 this.renderComponentsTable();
@@ -703,20 +749,19 @@
                     document.getElementById('user-display-role').textContent = `Rol: ${userFound.role}`;
                     
                     this.updateNavigation();
-                    
-                    if(userFound.role === 'admin') this.switchView('clients-admin');
-                    else if (userFound.role === 'tecnico') this.switchView('tech-home');
-                    else {
-                        this.currentSelectedClientId = userFound.clientId;
-                        this.loadClientDashboard(userFound.clientId);
-                        this.switchView('client');
-                    }
-                    this.showToast(`Bienvenido, ${userFound.name}`, 'success');
-                    document.getElementById('login-form').reset();
-                } else {
-                    this.showToast('Correo no autorizado en el sistema.', 'error');
+                    this.sincronizarNube();
+                   if(userFound.role === 'admin') this.switchView('clients-admin');
+                else if (userFound.role === 'tecnico') this.switchView('tech-home');
+                else {
+                    this.currentSelectedClientId = userFound.clientId;
+                    this.loadClientDashboard(userFound.clientId);
+                    this.switchView('client');
                 }
-            },
+                this.showToast(`Bienvenido, ${userFound.name}`, 'success');
+                document.getElementById('login-form').reset();
+            } else {
+                this.showToast('Correo no autorizado en el sistema.', 'error');
+            }
 
             logout: function() {
                 this.currentUser = null;
@@ -1720,4 +1765,5 @@
     </script>
 </body>
 </html>
+
 
