@@ -18,7 +18,7 @@
         .photo-upload-label { cursor: pointer; transition: all 0.2s; }
         .photo-upload-label:hover { background-color: #f8fafc; border-color: #3b82f6; }
         
-        /* Estilos específicos para Impresión (PDF) compactados para 1 Hoja/Equipo */
+        /* Estilos específicos para Impresión (PDF) */
         @media print {
             body { background: white !important; font-size: 11px; }
             #navbar, #footer, #toast-container, main > div:not(#print-view) { display: none !important; }
@@ -46,7 +46,7 @@
                         <p id="user-display-name" class="font-semibold text-blue-100"></p>
                         <p id="user-display-role" class="text-xs text-blue-300 uppercase tracking-wider"></p>
                     </div>
-                    <button onclick="app.logout()" class="p-2 bg-blue-800 hover:bg-blue-700 rounded-lg transition-colors" title="Cerrar Sesión">
+                    <button onclick="window.app.logout()" class="p-2 bg-blue-800 hover:bg-blue-700 rounded-lg transition-colors" title="Cerrar Sesión">
                         <i data-lucide="log-out" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -67,7 +67,7 @@
                     <p class="text-slate-500 text-sm mt-1">Portal de Gestión HVAC</p>
                 </div>
                 
-                <form id="login-form" onsubmit="app.handleLogin(event)" class="space-y-5">
+                <form id="login-form" onsubmit="window.app.handleLogin(event)" class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Correo Electrónico Autorizado</label>
                         <div class="relative">
@@ -102,7 +102,7 @@
                 <div class="lg:col-span-1 space-y-4">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Cliente Asignado</label>
-                        <select id="tech-client-selector" onchange="app.selectTechClient()" class="w-full border-slate-300 border rounded-lg p-2 text-sm bg-slate-50 focus:ring-blue-500"></select>
+                        <select id="tech-client-selector" onchange="window.app.selectTechClient()" class="w-full border-slate-300 border rounded-lg p-2 text-sm bg-slate-50 focus:ring-blue-500"></select>
                         <div id="tech-client-info" class="mt-4 hidden text-sm border-t pt-4">
                             <p class="font-semibold text-slate-800"><i data-lucide="map-pin" class="w-3 h-3 inline text-slate-400"></i> Dirección:</p>
                             <p id="tech-client-address" class="text-slate-600 mb-2">-</p>
@@ -113,7 +113,7 @@
                     <div id="tech-equipment-panel" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hidden">
                         <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
                             <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="layers" class="text-blue-600 w-5 h-5"></i> Banco de Equipos</h3>
-                            <button onclick="app.openAddEquipmentModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded flex items-center gap-1 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Nuevo Equipo</button>
+                            <button onclick="window.app.openAddEquipmentModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded flex items-center gap-1 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Nuevo Equipo</button>
                         </div>
                         <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
                             <table class="w-full text-sm text-left">
@@ -137,10 +137,10 @@
                     <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="clipboard-signature" class="text-blue-600"></i> Nueva Bitácora de Servicio</h2>
                     <p class="text-slate-500">Capture únicamente los parámetros y condiciones actuales de este mantenimiento.</p>
                 </div>
-                <button onclick="app.switchView('tech-home')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Cancelar</button>
+                <button onclick="window.app.switchView('tech-home')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Cancelar</button>
             </div>
 
-            <form id="tech-form" onsubmit="app.submitTechForm(event)" class="space-y-6">
+            <form id="tech-form" onsubmit="window.app.submitTechForm(event)" class="space-y-6">
                 <input type="hidden" id="tf-eq-id">
                 
                 <div class="bg-blue-900 text-white rounded-xl shadow-md overflow-hidden relative">
@@ -177,7 +177,7 @@
                                     <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i><p class="text-xs font-semibold">Tocar para Foto</p>
                                 </div>
                                 <img id="img-preview-before" class="absolute inset-0 w-full h-full object-cover hidden z-20">
-                                <input type="file" accept="image/*" class="hidden" onchange="app.previewImage(event, 'img-preview-before', 'preview-container-before')" />
+                                <input type="file" accept="image/*" class="hidden" onchange="window.app.previewImage(event, 'img-preview-before', 'preview-container-before')" />
                             </label>
                         </div>
                         <div>
@@ -187,7 +187,7 @@
                                     <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i><p class="text-xs font-semibold">Tocar para Foto</p>
                                 </div>
                                 <img id="img-preview-during" class="absolute inset-0 w-full h-full object-cover hidden z-20">
-                                <input type="file" accept="image/*" class="hidden" onchange="app.previewImage(event, 'img-preview-during', 'preview-container-during')" />
+                                <input type="file" accept="image/*" class="hidden" onchange="window.app.previewImage(event, 'img-preview-during', 'preview-container-during')" />
                             </label>
                         </div>
                         <div>
@@ -197,7 +197,7 @@
                                     <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i><p class="text-xs font-semibold">Tocar para Foto</p>
                                 </div>
                                 <img id="img-preview-after" class="absolute inset-0 w-full h-full object-cover hidden z-20">
-                                <input type="file" accept="image/*" class="hidden" onchange="app.previewImage(event, 'img-preview-after', 'preview-container-after')" />
+                                <input type="file" accept="image/*" class="hidden" onchange="window.app.previewImage(event, 'img-preview-after', 'preview-container-after')" />
                             </label>
                         </div>
                     </div>
@@ -253,7 +253,7 @@
                     <h2 class="text-3xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="building" class="text-blue-600"></i> Mi Panel de Cliente</h2>
                     <p class="text-slate-500 mt-1" id="client-dash-name">Cargando...</p>
                 </div>
-                <button onclick="app.printClientDashboard()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
+                <button onclick="window.app.printClientDashboard()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
                     <i data-lucide="printer" class="w-4 h-4"></i> Imprimir Reporte General
                 </button>
             </div>
@@ -302,7 +302,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm self-start">
                     <h3 class="font-bold text-slate-800 mb-4 border-b pb-2">Registrar Usuario</h3>
-                    <form onsubmit="app.addUser(event)" class="space-y-4">
+                    <form onsubmit="window.app.addUser(event)" class="space-y-4">
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="new-user-name" required class="w-full border rounded p-2 text-sm"></div>
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo Autorizado (Login)</label><input type="email" id="new-user-email" required class="w-full border rounded p-2 text-sm"></div>
                         <div>
@@ -347,11 +347,11 @@
                 <div class="lg:col-span-1 space-y-6">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Seleccionar Cliente</label>
-                        <select id="admin-client-selector" onchange="app.selectAdminClient()" class="w-full border-slate-300 border rounded-lg p-2 text-sm bg-slate-50 focus:ring-blue-500"></select>
+                        <select id="admin-client-selector" onchange="window.app.selectAdminClient()" class="w-full border-slate-300 border rounded-lg p-2 text-sm bg-slate-50 focus:ring-blue-500"></select>
                         <div id="admin-client-info-card" class="mt-4 hidden text-sm border-t pt-4 relative">
                             <div class="absolute top-4 right-0 flex gap-1">
-                                <button onclick="app.openEditClientModal()" class="text-blue-600 hover:text-blue-800 p-1" title="Editar Cliente"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                                <button onclick="app.requestDeleteClient()" class="text-red-600 hover:text-red-800 p-1" title="Eliminar Cliente"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <button onclick="window.app.openEditClientModal()" class="text-blue-600 hover:text-blue-800 p-1" title="Editar Cliente"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                <button onclick="window.app.requestDeleteClient()" class="text-red-600 hover:text-red-800 p-1" title="Eliminar Cliente"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </div>
                             <p class="font-semibold text-slate-800 mt-2"><i data-lucide="map-pin" class="w-3 h-3 inline"></i> Dirección:</p><p id="ac-address" class="text-slate-600 mb-2">-</p>
                             <p class="font-semibold text-slate-800"><i data-lucide="repeat" class="w-3 h-3 inline"></i> Frecuencia:</p><p id="ac-frequency" class="text-blue-600 font-bold mb-2">-</p>
@@ -360,7 +360,7 @@
                     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                         <div class="bg-slate-900 text-white px-4 py-3 font-semibold flex items-center justify-between">
                             <span class="flex items-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4"></i> Agenda</span>
-                            <button onclick="app.openScheduleModal()" class="bg-blue-600 hover:bg-blue-500 text-xs px-2 py-1 rounded flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Programar</button>
+                            <button onclick="window.app.openScheduleModal()" class="bg-blue-600 hover:bg-blue-500 text-xs px-2 py-1 rounded flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Programar</button>
                         </div>
                         <div class="p-4 space-y-3" id="admin-alarms-list"><p class="text-sm text-slate-500 italic">Seleccione un cliente.</p></div>
                     </div>
@@ -382,7 +382,7 @@
                     <div id="admin-logs-panel" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hidden">
                         <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
                             <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="history" class="text-blue-600 w-5 h-5"></i> Registro Histórico de Bitácoras</h3>
-                            <button onclick="app.printClientDashboard()" class="text-slate-600 hover:text-slate-800 text-sm font-medium border px-3 py-1 bg-white rounded flex items-center gap-1"><i data-lucide="printer" class="w-4 h-4"></i> Reporte Global</button>
+                            <button onclick="window.app.printClientDashboard()" class="text-slate-600 hover:text-slate-800 text-sm font-medium border px-3 py-1 bg-white rounded flex items-center gap-1"><i data-lucide="printer" class="w-4 h-4"></i> Reporte Global</button>
                         </div>
                         <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
                             <table class="w-full text-sm text-left">
@@ -392,10 +392,6 @@
                                 <tbody class="divide-y divide-slate-100" id="admin-logs-table-body"></tbody>
                             </table>
                         </div>
-                    </div>
-                    
-                    <div id="admin-no-client" class="h-full flex flex-col items-center justify-center py-20 text-slate-400 bg-white rounded-xl border border-slate-200 shadow-sm">
-                        <i data-lucide="mouse-pointer-click" class="w-16 h-16 mb-4 text-slate-300"></i><p>Selecciona un cliente para ver su información.</p>
                     </div>
                 </div>
             </div>
@@ -419,7 +415,7 @@
                 <div class="p-6">
                     <p id="confirm-message" class="text-slate-700 mb-6 text-sm">¿Está seguro de que desea realizar esta acción?</p>
                     <div class="flex justify-end gap-2">
-                        <button type="button" onclick="app.closeConfirmModal()" class="px-4 py-2 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 text-sm font-medium">Cancelar</button>
+                        <button type="button" onclick="window.app.closeConfirmModal()" class="px-4 py-2 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 text-sm font-medium">Cancelar</button>
                         <button type="button" id="confirm-action-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700">Sí, Confirmar</button>
                     </div>
                 </div>
@@ -432,7 +428,7 @@
                     <h3 class="font-bold">Editar Usuario</h3>
                     <button type="button" onclick="document.getElementById('modal-edit-user').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button>
                 </div>
-                <form onsubmit="app.saveEditUser(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.saveEditUser(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-u-id">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="edit-u-name" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo Autorizado (Login)</label><input type="email" id="edit-u-email" required class="w-full border rounded p-2 text-sm"></div>
@@ -459,7 +455,7 @@
         <div id="modal-add-client" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Cliente</h3><button type="button" onclick="document.getElementById('modal-add-client').classList.add('hidden')" class="p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <form onsubmit="app.addClient(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.addClient(event)" class="p-6 space-y-4">
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label><input type="text" id="add-c-name" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Dirección</label><input type="text" id="add-c-address" required class="w-full border rounded p-2"></div>
                     <div class="grid grid-cols-2 gap-4">
@@ -477,7 +473,7 @@
         <div id="modal-edit-client" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Cliente</h3><button type="button" onclick="document.getElementById('modal-edit-client').classList.add('hidden')" class="p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <form onsubmit="app.saveEditClient(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.saveEditClient(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-c-id">
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label><input type="text" id="edit-c-name" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium text-slate-700 mb-1">Dirección</label><input type="text" id="edit-c-address" required class="w-full border rounded p-2"></div>
@@ -496,7 +492,7 @@
         <div id="modal-add-eq" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Equipo (Ficha Técnica)</h3><button type="button" onclick="document.getElementById('modal-add-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
+                <form onsubmit="window.app.saveEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="add-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="add-eq-key" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Tipo</label><select id="add-eq-type" required class="w-full border rounded p-2 text-sm bg-white"><option value="">Seleccione...</option><option>Minisplit</option><option>Paquete / RoofTop</option><option>Dividido</option><option>Chiller</option></select></div>
@@ -522,7 +518,7 @@
         <div id="modal-edit-eq" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Ficha del Equipo</h3><button type="button" onclick="document.getElementById('modal-edit-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveEditEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
+                <form onsubmit="window.app.saveEditEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
                     <input type="hidden" id="edit-eq-id">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="edit-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="edit-eq-key" required class="w-full border rounded p-2 text-sm"></div>
@@ -549,7 +545,7 @@
         <div id="modal-schedule-service" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Agendar Servicio</h3><button type="button" onclick="document.getElementById('modal-schedule-service').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveScheduledService(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.saveScheduledService(event)" class="p-6 space-y-4">
                     <input type="hidden" id="schedule-eq-id">
                     <div><label class="block text-sm font-medium mb-1">Fecha</label><input type="date" id="schedule-date" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium mb-1">Notas / Motivo</label><textarea id="schedule-notes" class="w-full border rounded p-2" rows="2"></textarea></div>
@@ -564,7 +560,7 @@
         <div id="modal-edit-service" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4 fade-in no-print">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Cita Programada</h3><button type="button" onclick="document.getElementById('modal-edit-service').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
-                <form onsubmit="app.saveEditService(event)" class="p-6 space-y-4">
+                <form onsubmit="window.app.saveEditService(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-s-id">
                     <div><label class="block text-sm font-medium mb-1">Fecha</label><input type="date" id="edit-s-date" required class="w-full border rounded p-2"></div>
                     <div><label class="block text-sm font-medium mb-1">Notas</label><textarea id="edit-s-notes" class="w-full border rounded p-2" rows="2"></textarea></div>
@@ -604,22 +600,18 @@
     </div>
 
     <script type="module">
-        // 1. Importar Supabase
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-        // 2. Configuración Supabase
         const SUPABASE_URL = 'https://fdpravuvrwcgozbdhuua.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkcHJhdnV2cndjZ296YmRodXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NDc3MDYsImV4cCI6MjA4NzIyMzcwNn0.R0M8rZp9iBzrzybIQmIqPDcpAJXMjVwnORe5UmcB5Vg'; 
         const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
         window.supabase = supabase;
 
-        // 3. PIN MAESTRO DE SEGURIDAD EMPRESARIAL
+        // PIN MAESTRO DE SEGURIDAD EMPRESARIAL
         const PIN_EMPRESA = 'BISONTE2026';
 
-        // Componentes para la bitácora
         const hvacComponents = ["Serpentín Evaporador", "Serpentín Condensador", "Filtros de Aire", "Turbina / Ventilador", "Motor Condensadora", "Compresor", "Tarjeta PCB", "Capacitores", "Charola / Drenaje", "Aislamiento"];
 
-        // BASE DE DATOS LOCAL SEGURA (Sin contraseñas personales)
         const appDB = {
             users: [
                 { id: 'u1', name: 'Israel Ramirez Bolaños', email: 'israelrbolanos@bisonteingenieria.com', role: 'admin' },
@@ -668,53 +660,66 @@
                     this.showToast("Memoria llena. Intente borrar historial antiguo.", "error");
                 }
             },
-// --- NUEVA FUNCIÓN: DESCARGAR DE LA NUBE ---
-        sincronizarNube: async function() {
-            try {
-                this.showToast("Descargando historial de la nube...", "info");
-                
-                // Pedimos todos los registros a la tabla 'bitacoras'
-                const { data, error } = await window.supabase.from('bitacoras').select('*');
-                if (error) throw error;
 
-                // Traducimos los datos de Supabase al formato que usa tu app local
-                const logsNube = data.map(dbRow => {
-                    const eqLocal = appDB.equipments.find(e => e.unitId === dbRow.eq_id);
-                    const fecha = dbRow.created_at ? new Date(dbRow.created_at) : new Date();
+            sincronizarNube: async function() {
+                try {
+                    this.showToast("Sincronizando reportes de la nube...", "info");
                     
-                    return {
-                        id: dbRow.id,
-                        eqId: eqLocal ? eqLocal.id : dbRow.eq_id,
-                        clientId: dbRow.client_id,
-                        techName: dbRow.tech_name,
-                        date: `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`,
-                        time: fecha.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
-                        techComments: dbRow.tech_comments,
-                        photos: { before: dbRow.foto_before, during: dbRow.foto_during, after: dbRow.foto_after },
-                        data: { volts: dbRow.volts, amps: dbRow.amps, psi: dbRow.psi, temp: dbRow.temp },
-                        components: dbRow.components_json || [],
-                        needsCorrective: dbRow.needs_corrective,
-                        correctiveDetails: dbRow.corrective_details
-                    };
-                });
+                    const { data, error } = await window.supabase.from('bitacoras').select('*');
+                    if (error) throw error;
 
-                // Reemplazamos la memoria local vieja con la información fresca de la nube
-                appDB.logs = logsNube;
-                this.saveDB();
+                    // Ordenar por fecha para que el estado del equipo se defina por la bitácora más reciente
+                    data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-                // Refrescamos las pantallas para que aparezcan los nuevos datos
-                if (this.currentSelectedClientId) {
-                    const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
-                    if (isTechView) this.updateClientUI('tech', this.currentSelectedClientId);
-                    else if (!document.getElementById('view-clients-admin').classList.contains('hidden-view')) this.updateClientUI('admin', this.currentSelectedClientId);
-                    else this.loadClientDashboard(this.currentSelectedClientId);
+                    const logsNube = data.map(dbRow => {
+                        const eqLocal = appDB.equipments.find(e => e.unitId === dbRow.eq_id);
+                        const fecha = dbRow.created_at ? new Date(dbRow.created_at) : new Date();
+                        
+                        const logObj = {
+                            id: dbRow.id,
+                            eqId: eqLocal ? eqLocal.id : dbRow.eq_id,
+                            clientId: dbRow.client_id,
+                            techName: dbRow.tech_name,
+                            date: `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`,
+                            time: fecha.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
+                            techComments: dbRow.tech_comments,
+                            photos: { before: dbRow.foto_before, during: dbRow.foto_during, after: dbRow.foto_after },
+                            data: { volts: dbRow.volts, amps: dbRow.amps, psi: dbRow.psi, temp: dbRow.temp },
+                            components: dbRow.components_json || [],
+                            needsCorrective: dbRow.needs_corrective,
+                            correctiveDetails: dbRow.corrective_details
+                        };
+
+                        // Actualizar estado del equipo automáticamente con la bitácora de la nube
+                        if (eqLocal) {
+                            eqLocal.lastPreventiveDate = logObj.date;
+                            if (logObj.needsCorrective) { 
+                                eqLocal.status = 'Requiere Correctivo'; 
+                                eqLocal.correctiveDetails = logObj.correctiveDetails; 
+                            } else { 
+                                eqLocal.status = 'Operativo'; 
+                                eqLocal.correctiveDetails = null; 
+                            }
+                        }
+                        return logObj;
+                    });
+
+                    appDB.logs = logsNube;
+                    this.saveDB();
+
+                    if (this.currentSelectedClientId) {
+                        const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
+                        if (isTechView) this.updateClientUI('tech', this.currentSelectedClientId);
+                        else if (!document.getElementById('view-clients-admin').classList.contains('hidden-view')) this.updateClientUI('admin', this.currentSelectedClientId);
+                        else this.loadClientDashboard(this.currentSelectedClientId);
+                    }
+                    
+                } catch (err) {
+                    console.error(err);
+                    this.showToast("Error descargando de Supabase: " + err.message, "error");
                 }
-                
-            } catch (err) {
-                console.error(err);
-                this.showToast("Error descargando de Supabase: " + err.message, "error");
-            }
-        },    
+            },
+
             init: function() {
                 this.loadDB();
                 this.renderComponentsTable();
@@ -722,18 +727,16 @@
                 this.renderClientsSelectors();
             },
 
-            // --- NAVEGACIÓN Y LOGIN SEGURO ---
             handleLogin: function(e) {
                 e.preventDefault();
-                const emailInput = document.getElementById('login-email').value.toLowerCase();
-                const pinInput = document.getElementById('login-password').value;
+                // .trim() soluciona los errores de espacios invisibles desde el teclado del celular
+                const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
+                const pinInput = document.getElementById('login-password').value.trim();
                 
-                // 1. Validar PIN Corporativo
                 if (pinInput !== PIN_EMPRESA) {
                     return this.showToast('PIN de empresa incorrecto.', 'error');
                 }
 
-                // 2. Validar que el correo exista en el registro
                 const userFound = appDB.users.find(u => u.email.toLowerCase() === emailInput);
                 
                 if (userFound) {
@@ -750,18 +753,20 @@
                     
                     this.updateNavigation();
                     this.sincronizarNube();
-                   if(userFound.role === 'admin') this.switchView('clients-admin');
-                else if (userFound.role === 'tecnico') this.switchView('tech-home');
-                else {
-                    this.currentSelectedClientId = userFound.clientId;
-                    this.loadClientDashboard(userFound.clientId);
-                    this.switchView('client');
+                    
+                    if(userFound.role === 'admin') this.switchView('clients-admin');
+                    else if (userFound.role === 'tecnico') this.switchView('tech-home');
+                    else {
+                        this.currentSelectedClientId = userFound.clientId;
+                        this.loadClientDashboard(userFound.clientId);
+                        this.switchView('client');
+                    }
+                    this.showToast(`Bienvenido, ${userFound.name}`, 'success');
+                    document.getElementById('login-form').reset();
+                } else {
+                    this.showToast('Correo no autorizado en el sistema.', 'error');
                 }
-                this.showToast(`Bienvenido, ${userFound.name}`, 'success');
-                document.getElementById('login-form').reset();
-            } else {
-                this.showToast('Correo no autorizado en el sistema.', 'error');
-            }
+            },
 
             logout: function() {
                 this.currentUser = null;
@@ -788,11 +793,10 @@
             },
 
             createNavLink: function(text, target, icon) {
-                return `<button onclick="app.switchView('${target}')" class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-blue-100 hover:bg-blue-800"><i data-lucide="${icon}" class="w-4 h-4"></i> ${text}</button>`;
+                return `<button onclick="window.app.switchView('${target}')" class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-blue-100 hover:bg-blue-800"><i data-lucide="${icon}" class="w-4 h-4"></i> ${text}</button>`;
             },
 
             switchView: function(viewId) {
-                // Control estricto de vistas
                 if (this.currentUser && this.currentUser.role === 'tecnico' && viewId !== 'tech-home' && viewId !== 'tech-form' && viewId !== 'login') {
                     return this.showToast('No tiene permisos para ver esta sección.', 'error');
                 }
@@ -807,7 +811,6 @@
                 window.scrollTo(0,0);
             },
 
-            // --- SISTEMA DE CONFIRMACIÓN ---
             openConfirmModal: function(message, callback) {
                 document.getElementById('confirm-message').textContent = message;
                 this.confirmCallback = callback;
@@ -823,7 +826,6 @@
                 this.confirmCallback = null;
             },
 
-            // --- USUARIOS ---
             addUser: function(e) {
                 e.preventDefault();
                 const name = document.getElementById('new-user-name').value;
@@ -894,15 +896,14 @@
                 let html = '';
                 appDB.users.forEach(u => {
                     let roleStr = u.role === 'cliente' ? `Cliente (${appDB.clients.find(c=>c.id==u.clientId)?.name || 'Desconocido'})` : u.role;
-                    let editBtn = `<button onclick="app.openEditUserModal('${u.id}')" class="text-blue-600 hover:text-blue-800 p-1 bg-blue-50 rounded mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>`;
-                    let delBtn = u.id === 'u1' ? '' : `<button onclick="app.requestDeleteUser('${u.id}')" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+                    let editBtn = `<button onclick="window.app.openEditUserModal('${u.id}')" class="text-blue-600 hover:text-blue-800 p-1 bg-blue-50 rounded mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>`;
+                    let delBtn = u.id === 'u1' ? '' : `<button onclick="window.app.requestDeleteUser('${u.id}')" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
                     html += `<tr class="border-b hover:bg-slate-50"><td class="px-6 py-3 font-medium">${u.name}</td><td class="px-6 py-3">${u.email}</td><td class="px-6 py-3 capitalize">${roleStr}</td><td class="px-6 py-3 text-right whitespace-nowrap">${editBtn}${delBtn}</td></tr>`;
                 });
                 tbody.innerHTML = html;
                 lucide.createIcons();
             },
 
-            // --- ADMIN CLIENTES ---
             renderClientsSelectors: function() {
                 let opts = '<option value="">-- Elige un cliente --</option>';
                 appDB.clients.forEach(c => opts += `<option value="${c.id}">${c.name}</option>`);
@@ -923,7 +924,6 @@
                 };
                 appDB.clients.push(newClient);
 
-                // Auto-programar agenda
                 let baseDate = new Date(newClient.startDate + 'T12:00:00');
                 let count = newClient.frequency === 'Mensual' ? 12 : (newClient.frequency === 'Trimestral' ? 4 : (newClient.frequency === 'Semestral' ? 2 : 1));
                 let monthsToAdd = newClient.frequency === 'Mensual' ? 1 : (newClient.frequency === 'Trimestral' ? 3 : (newClient.frequency === 'Semestral' ? 6 : 12));
@@ -1048,7 +1048,6 @@
                 }
             },
 
-            // --- AGENDA / SERVICIOS ---
             openScheduleModal: function(eqId = null) {
                 if(!this.currentSelectedClientId) return this.showToast('Primero seleccione un cliente.', 'error');
                 
@@ -1161,9 +1160,9 @@
                     const statusClass = s.status === 'completed' ? 'bg-slate-50' : 'bg-amber-50';
                     
                     const reminderIcon = s.reminderSent ? '<i data-lucide="check-check" class="w-4 h-4 text-green-600"></i>' : '<i data-lucide="bell" class="w-4 h-4 text-blue-600"></i>';
-                    const reminderBtn = isAdmin ? `<button onclick="app.sendReminder(${s.id})" class="p-1.5 border rounded bg-white hover:bg-slate-50 transition-colors ml-2" title="Enviar Recordatorio por Correo">${reminderIcon}</button>` : '';
-                    const editBtn = isAdmin ? `<button onclick="app.openEditServiceModal(${s.id})" class="p-1.5 border rounded bg-white hover:bg-slate-50 transition-colors ml-1" title="Editar Fecha"><i data-lucide="edit-2" class="w-4 h-4 text-slate-600"></i></button>` : '';
-                    const delBtn = isAdmin ? `<button onclick="app.requestDeleteService(${s.id})" class="p-1.5 border rounded bg-white hover:bg-red-50 transition-colors ml-1 text-red-600" title="Eliminar Fecha"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '';
+                    const reminderBtn = isAdmin ? `<button onclick="window.app.sendReminder(${s.id})" class="p-1.5 border rounded bg-white hover:bg-slate-50 transition-colors ml-2" title="Enviar Recordatorio por Correo">${reminderIcon}</button>` : '';
+                    const editBtn = isAdmin ? `<button onclick="window.app.openEditServiceModal(${s.id})" class="p-1.5 border rounded bg-white hover:bg-slate-50 transition-colors ml-1" title="Editar Fecha"><i data-lucide="edit-2" class="w-4 h-4 text-slate-600"></i></button>` : '';
+                    const delBtn = isAdmin ? `<button onclick="window.app.requestDeleteService(${s.id})" class="p-1.5 border rounded bg-white hover:bg-red-50 transition-colors ml-1 text-red-600" title="Eliminar Fecha"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '';
                     
                     const iconType = s.eqId ? 'wrench' : 'clock';
                     const iconColor = s.eqId ? 'text-red-600' : 'text-slate-500';
@@ -1182,7 +1181,6 @@
                 lucide.createIcons();
             },
 
-            // --- EQUIPOS, HISTORIAL Y BITÁCORA ---
             openAddEquipmentModal: function() {
                 if(!this.currentSelectedClientId) return this.showToast('Seleccione un cliente primero.', 'error');
                 document.getElementById('modal-add-eq').classList.remove('hidden');
@@ -1293,7 +1291,6 @@
                 const eq = appDB.equipments.find(e => e.id === eqId);
                 document.getElementById('tf-eq-id').value = eq.id;
                 
-                // Mostrar variables estáticas vinculadas al equipo
                 document.getElementById('tf-display-id').textContent = eq.unitId;
                 document.getElementById('tf-display-key').textContent = eq.key || 'N/A';
                 document.getElementById('tf-display-brand').textContent = `${eq.type} / ${eq.brand}`;
@@ -1303,7 +1300,6 @@
                 document.getElementById('tf-display-itm').textContent = `${eq.itm || '--'}A`;
                 document.getElementById('tf-display-polos').textContent = eq.polos || '1';
                 
-                // Limpiar previsualizaciones de fotos
                 ['before', 'during', 'after'].forEach(p => {
                     document.getElementById(`img-preview-${p}`).classList.add('hidden');
                     document.getElementById(`img-preview-${p}`).src = '';
@@ -1334,7 +1330,6 @@
                         let comments = l.techComments ? `<p class="text-sm text-slate-600 mt-2 bg-white p-2 rounded border border-slate-200"><b>Comentario:</b> ${l.techComments}</p>` : '';
                         let errorDetails = l.needsCorrective ? `<p class="text-sm text-red-600 mt-2 bg-red-50 p-2 rounded border border-red-200"><b>Falla Detectada:</b> ${l.correctiveDetails}</p>` : '';
                         
-                        // Fallback handling for data fields to prevent errors on older local records
                         const dVolts = l.data?.volts || '--';
                         const dAmps = l.data?.amps || '--';
                         const dPsi = l.data?.psi || '--';
@@ -1368,7 +1363,6 @@
                 lucide.createIcons();
             },
 
-            // Compresión de fotos para optimizar memoria local y carga
             previewImage: function(event, imgId, containerId) {
                 const file = event.target.files[0];
                 if (file) {
@@ -1405,7 +1399,6 @@
                 }
             },
 
-            // --- ENVÍO PRINCIPAL A SUPABASE Y DB LOCAL ---
             submitTechForm: async function(e) {
                 e.preventDefault();
                 this.showToast("Sincronizando con Bisonte Cloud...", "info");
@@ -1418,14 +1411,10 @@
                     const urls = { before: null, during: null, after: null };
                     const localPhotos = { before: null, during: null, after: null };
 
-                    // 1. SUBIR FOTOS AL STORAGE DE SUPABASE
                     for (const id of fotosIds) {
                         const imgElement = document.getElementById(`img-preview-${id}`);
                         if (imgElement && !imgElement.classList.contains('hidden')) {
-                            // Guardar base64 local para renderizado inmediato
                             localPhotos[id] = imgElement.src;
-                            
-                            // Convertir y subir a la nube
                             const blob = await fetch(imgElement.src).then(res => res.blob());
                             const fileName = `hvac-${Date.now()}-${id}.jpg`;
 
@@ -1437,7 +1426,6 @@
                         }
                     }
 
-                    // 2. CONSTRUIR OBJETO DE DATOS
                     const now = new Date();
                     const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
                     
@@ -1454,7 +1442,6 @@
                         obs: tr.querySelector('.comp-obs').value
                     }));
 
-                    // 3. ENVIAR A SUPABASE (Nube)
                     const { error: dbError } = await window.supabase.from('bitacoras').insert([{
                         eq_id: document.getElementById('tf-display-id').textContent,
                         client_id: eq.clientId,
@@ -1474,7 +1461,6 @@
 
                     if (dbError) throw dbError;
 
-                    // 4. GUARDAR EN LOCAL DB (Para que la app siga funcionando sin recargar)
                     const logEntry = {
                         id: Date.now(),
                         eqId: eq.id,
@@ -1506,7 +1492,6 @@
                 }
             },
 
-            // --- RENDERIZADO DE TABLAS ---
             renderEquipmentList: function(mode, eqs) {
                 const tbody = document.getElementById(`${mode}-equipment-table-body`);
                 let html = '';
@@ -1514,9 +1499,9 @@
                     let statusHtml = eq.status === 'Operativo' ? '<span class="text-green-600 bg-green-50 px-2 py-1 rounded text-[10px] border border-green-200 font-bold">Operativo</span>' : '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded text-[10px] border border-red-200">En Falla</span>';
                     
                     if (mode === 'admin') {
-                        const scheduleBtn = `<button onclick="app.openScheduleModal(${eq.id})" class="text-blue-600 hover:text-blue-800 border border-blue-200 px-1 py-0.5 rounded bg-blue-50 text-[10px] font-bold transition-colors" title="Programar Correctivo"><i data-lucide="calendar-plus" class="w-3 h-3"></i></button>`;
-                        const editBtn = `<button onclick="app.openEditEquipmentModal(${eq.id})" class="text-slate-600 hover:text-blue-800 border border-slate-200 px-1 py-0.5 rounded bg-white text-[10px] font-bold transition-colors" title="Editar Equipo"><i data-lucide="edit-2" class="w-3 h-3"></i></button>`;
-                        const delBtn = `<button onclick="app.requestDeleteEquipment(${eq.id})" class="text-red-600 hover:text-red-800 border border-red-200 px-1 py-0.5 rounded bg-red-50 text-[10px] font-bold transition-colors" title="Eliminar Equipo"><i data-lucide="trash-2" class="w-3 h-3"></i></button>`;
+                        const scheduleBtn = `<button onclick="window.app.openScheduleModal(${eq.id})" class="text-blue-600 hover:text-blue-800 border border-blue-200 px-1 py-0.5 rounded bg-blue-50 text-[10px] font-bold transition-colors" title="Programar Correctivo"><i data-lucide="calendar-plus" class="w-3 h-3"></i></button>`;
+                        const editBtn = `<button onclick="window.app.openEditEquipmentModal(${eq.id})" class="text-slate-600 hover:text-blue-800 border border-slate-200 px-1 py-0.5 rounded bg-white text-[10px] font-bold transition-colors" title="Editar Equipo"><i data-lucide="edit-2" class="w-3 h-3"></i></button>`;
+                        const delBtn = `<button onclick="window.app.requestDeleteEquipment(${eq.id})" class="text-red-600 hover:text-red-800 border border-red-200 px-1 py-0.5 rounded bg-red-50 text-[10px] font-bold transition-colors" title="Eliminar Equipo"><i data-lucide="trash-2" class="w-3 h-3"></i></button>`;
 
                         html += `<tr class="border-b">
                             <td class="px-4 py-3"><span class="font-bold block">${eq.unitId}</span><span class="text-[10px] text-slate-500">${eq.type} ${eq.brand}</span></td>
@@ -1544,9 +1529,9 @@
                             <td class="px-4 py-3">${statusHtml}</td>
                             <td class="px-4 py-3 text-right min-w-[130px]">
                                 <div class="flex flex-col gap-1">
-                                    <button onclick="app.openTechForm(${eq.id})" class="text-blue-700 border border-blue-200 px-2 py-1.5 rounded bg-blue-50 text-[11px] font-bold shadow-sm hover:bg-blue-100 flex justify-center items-center gap-1 transition-colors"><i data-lucide="clipboard-pen" class="w-3 h-3"></i> Bitácora</button>
-                                    <button onclick="app.openEqHistory(${eq.id})" class="text-indigo-700 border border-indigo-200 px-2 py-1.5 rounded bg-indigo-50 text-[10px] font-bold shadow-sm hover:bg-indigo-100 flex justify-center items-center gap-1 transition-colors"><i data-lucide="clock" class="w-3 h-3"></i> Historial</button>
-                                    <button onclick="app.openEditEquipmentModal(${eq.id})" class="text-slate-600 border border-slate-200 px-2 py-1.5 rounded bg-white text-[10px] font-bold shadow-sm hover:bg-slate-50 flex justify-center items-center gap-1 transition-colors"><i data-lucide="edit-2" class="w-3 h-3"></i> Editar Info</button>
+                                    <button onclick="window.app.openTechForm(${eq.id})" class="text-blue-700 border border-blue-200 px-2 py-1.5 rounded bg-blue-50 text-[11px] font-bold shadow-sm hover:bg-blue-100 flex justify-center items-center gap-1 transition-colors"><i data-lucide="clipboard-pen" class="w-3 h-3"></i> Bitácora</button>
+                                    <button onclick="window.app.openEqHistory(${eq.id})" class="text-indigo-700 border border-indigo-200 px-2 py-1.5 rounded bg-indigo-50 text-[10px] font-bold shadow-sm hover:bg-indigo-100 flex justify-center items-center gap-1 transition-colors"><i data-lucide="clock" class="w-3 h-3"></i> Historial</button>
+                                    <button onclick="window.app.openEditEquipmentModal(${eq.id})" class="text-slate-600 border border-slate-200 px-2 py-1.5 rounded bg-white text-[10px] font-bold shadow-sm hover:bg-slate-50 flex justify-center items-center gap-1 transition-colors"><i data-lucide="edit-2" class="w-3 h-3"></i> Editar Info</button>
                                 </div>
                             </td>
                         </tr>`;
@@ -1571,7 +1556,7 @@
                             <td class="px-4 py-3 text-sm text-slate-600"><i data-lucide="user" class="w-3 h-3 inline"></i> ${l.techName}</td>
                             <td class="px-4 py-3 text-sm font-semibold">${eq?.unitId || 'N/A'}</td>
                             <td class="px-4 py-3 text-right">
-                                <button onclick="app.printLogReport(${l.id})" class="text-red-600 hover:text-red-800 border border-red-200 px-2 py-1 rounded bg-red-50 text-xs font-bold"><i data-lucide="file-pdf" class="w-3 h-3 inline"></i> PDF</button>
+                                <button onclick="window.app.printLogReport(${l.id})" class="text-red-600 hover:text-red-800 border border-red-200 px-2 py-1 rounded bg-red-50 text-xs font-bold"><i data-lucide="file-pdf" class="w-3 h-3 inline"></i> PDF</button>
                             </td>
                         </tr>
                     `;
@@ -1580,7 +1565,6 @@
                 lucide.createIcons();
             },
 
-            // --- VISTA CLIENTE PRIVADA ---
             loadClientDashboard: function(clientId) {
                 const client = appDB.clients.find(c => c.id == clientId);
                 if(!client) return;
@@ -1591,7 +1575,6 @@
                 this.renderLogsTable(clientId, 'client-dash');
             },
 
-            // --- IMPRESIÓN (PDF NATIVO) FORMATO COMPACTO 1 HOJA POR EQUIPO ---
             printClientDashboard: function() {
                 const clientId = this.currentSelectedClientId;
                 const client = appDB.clients.find(c => c.id == clientId);
@@ -1627,7 +1610,6 @@
                             photosHtml += `</div>`;
                         }
                         
-                        // Fallback parameters safety
                         const dVolts = latestLog.data?.volts || '--';
                         const dAmps = latestLog.data?.amps || '--';
                         const dPsi = latestLog.data?.psi || '--';
@@ -1704,7 +1686,6 @@
                     photosHtml += `</div>`;
                 }
                 
-                // Fallback parameters safety
                 const dVolts = log.data?.volts || '--';
                 const dAmps = log.data?.amps || '--';
                 const dPsi = log.data?.psi || '--';
@@ -1746,7 +1727,6 @@
                 window.print();
             },
 
-            // --- UI UTILS ---
             showToast: function(message, type = 'info') {
                 const container = document.getElementById('toast-container');
                 const toast = document.createElement('div');
@@ -1758,12 +1738,10 @@
             }
         };
 
-        // EXPOSICIÓN GLOBAL ESTRICTA Y SEGURA
+        // EXPOSICIÓN GLOBAL ESTRICTA (Permite que el HTML llame a las funciones)
         window.app = app;
-        document.addEventListener('DOMContentLoaded', () => { app.init(); });
+        app.init();
 
     </script>
 </body>
 </html>
-
-
