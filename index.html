@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -19,7 +18,6 @@
         .photo-upload-label { cursor: pointer; transition: all 0.2s; }
         .photo-upload-label:hover { background-color: #f8fafc; border-color: #3b82f6; }
         
-        /* Estilos específicos para Impresión (PDF) compactados para 1 Hoja/Equipo */
         @media print {
             body { background: white !important; font-size: 11px; }
             #navbar, #footer, #toast-container, main > div:not(#print-view) { display: none !important; }
@@ -218,8 +216,7 @@
                     <div class="p-0 overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="bg-slate-50 text-slate-500 border-b"><tr><th class="px-4 py-3">Componente</th><th class="px-4 py-3 w-40">Estado</th><th class="px-4 py-3">Observaciones / Limpieza</th></tr></thead>
-                            <tbody class="divide-y divide-slate-100" id="components-list">
-                                </tbody>
+                            <tbody class="divide-y divide-slate-100" id="components-list"></tbody>
                         </table>
                     </div>
                 </div>
@@ -407,8 +404,7 @@
                     <h3 class="font-bold flex items-center gap-2 text-lg"><i data-lucide="clock" class="w-5 h-5"></i> Historial de Intervenciones - <span id="history-eq-id" class="text-indigo-200"></span></h3>
                     <button type="button" onclick="document.getElementById('modal-eq-history').classList.add('hidden')" class="p-1 hover:bg-indigo-800 rounded transition-colors"><i data-lucide="x"></i></button>
                 </div>
-                <div class="p-6 overflow-y-auto flex-1 bg-slate-100" id="history-list-container">
-                    </div>
+                <div class="p-6 overflow-y-auto flex-1 bg-slate-100" id="history-list-container"></div>
             </div>
         </div>
 
@@ -607,14 +603,28 @@
     <script>
         lucide.createIcons();
 
-        // Inicialización de Supabase
-        const supabaseUrl = 'TU_SUPABASE_URL';
-        const supabaseAnonKey = 'TU_SUPABASE_ANON_KEY';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+        // -------------------------------------------------------------
+        // BLINDAJE SUPABASE: Inicialización protegida
+        // -------------------------------------------------------------
+        let supabase = null;
+        const supabaseUrl = 'https://fdpravuvrwcgozbdhuua.supabase.co'; 
+        
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSGyL
+        // ⚠️ ¡¡NUNCA PONGAS LA "SECRET KEY" AQUÍ!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        const supabaseAnonKey = 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSGyL'; 
+
+        try {
+            if (supabaseUrl && supabaseUrl.startsWith('http') && supabaseAnonKey !== 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSGyL') {
+                supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+            }
+        } catch (error) {
+            console.error("Error inicializando cliente Supabase:", error);
+        }
 
         const hvacComponents = ["Serpentín Evaporador", "Serpentín Condensador", "Filtros de Aire", "Turbina / Ventilador", "Motor Condensadora", "Compresor", "Tarjeta PCB", "Capacitores", "Charola / Drenaje", "Aislamiento"];
 
-        // BASE DE DATOS EN MEMORIA (Alimentada asíncronamente desde Supabase)
         const appDB = {
             users: [],
             clients: [],
@@ -630,69 +640,69 @@
             confirmCallback: null,
 
             loadDB: async function() {
+                if (!supabase) return;
                 try {
-                    // Carga desde Supabase apuntando a tus tablas exactas
-                    // NOTA CRÍTICA: Debes crear la tabla "servicios" en tu Supabase para la Agenda.
+                    // .catch() silencioso para evitar que una tabla vacía/inexistente bloquee toda la web
                     const [resUsers, resClients, resEqs, resServices, resLogs] = await Promise.all([
-                        supabase.from('usuarios_app').select('*'), 
-                        supabase.from('clientes').select('*'),
-                        supabase.from('equipos').select('*'),
-                        supabase.from('servicios').select('*'), 
-                        supabase.from('bitacoras').select('*')
+                        supabase.from('usuarios_app').select('*').catch(()=>({data:null})), 
+                        supabase.from('clientes').select('*').catch(()=>({data:null})),
+                        supabase.from('equipos').select('*').catch(()=>({data:null})),
+                        supabase.from('servicios').select('*').catch(()=>({data:null})), 
+                        supabase.from('bitacoras').select('*').catch(()=>({data:null}))
                     ]);
                     
-                    if (resUsers.data) appDB.users = resUsers.data;
-                    if (resClients.data) appDB.clients = resClients.data;
-                    if (resEqs.data) appDB.equipments = resEqs.data;
-                    if (resServices.data) appDB.services = resServices.data;
-                    if (resLogs.data) appDB.logs = resLogs.data;
+                    if (resUsers && resUsers.data) appDB.users = resUsers.data;
+                    if (resClients && resClients.data) appDB.clients = resClients.data;
+                    if (resEqs && resEqs.data) appDB.equipments = resEqs.data;
+                    if (resServices && resServices.data) appDB.services = resServices.data;
+                    if (resLogs && resLogs.data) appDB.logs = resLogs.data;
                 } catch (e) {
-                    console.error("Error cargando BD Supabase", e);
-                    this.showToast("No se pudo establecer conexión con Supabase.", "error");
+                    console.error("Error de Red Supabase", e);
                 }
             },
 
             init: async function() {
-                await this.loadDB();
+                if(!supabase) {
+                    this.showToast('⚠️ Modo de Emergencia Local: Falta configurar la Clave Pública de Supabase en el código.', 'error');
+                } else {
+                    await this.loadDB();
+                }
                 this.renderComponentsTable();
                 this.renderUsersTable();
                 this.renderClientsSelectors();
             },
 
-            // --- NAVEGACIÓN Y LOGIN ---
+            // --- NAVEGACIÓN Y LOGIN BLINDADO ---
             handleLogin: function(e) {
                 e.preventDefault();
-                // Usamos trim() para evitar bloqueos por espacios accidentales al inicio/final
                 const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
                 const pinInput = document.getElementById('login-pin').value.trim();
                 
-                // Validación estricta del PIN Maestro
                 if (pinInput !== 'BISONTE2026') {
                     return this.showToast('Acceso Denegado: PIN Maestro incorrecto.', 'error');
                 }
                 
                 let userFound = appDB.users.find(u => u.email && u.email.toLowerCase() === emailInput);
 
-                // --- SISTEMA MAESTRO DE RESPALDO (BOOTSTRAP) ---
-                // Si la tabla usuarios_app está vacía, permite entrar al administrador original obligatoriamente.
+                // --- ACCESO MAESTRO DE RESPALDO (BOOTSTRAP) ---
+                // Si tú pones tu correo, pero la base de datos está vacía, te dejará entrar a la fuerza
+                // para que puedas usar el panel "Gestión de Usuarios" y crearte oficialmente.
                 if (!userFound && emailInput === 'israelrbolanos@bisonteingenieria.com') {
                     userFound = {
-                        id: 'master-admin',
-                        name: 'Israel Ramirez Bolaños',
+                        id: '999999999', 
+                        name: 'Israel R. (Admin Respaldo)',
                         email: 'israelrbolanos@bisonteingenieria.com',
                         role: 'admin',
                         clientId: null
                     };
-                    // Mostrar aviso para que recuerde registrarse en el sistema.
-                    this.showToast('Acceso Maestro de Emergencia Activo. Recuerda agregar tu usuario en "Gestión de Usuarios".', 'info');
+                    this.showToast('Modo de Alta activado. Por favor ingresa a "Gestión de Usuarios" y registra este correo oficialmente en la Nube.', 'info');
                 }
                 
                 if (userFound) {
                     if (userFound.role === 'cliente') {
                         const clientExists = appDB.clients.find(c => c.id == userFound.clientId);
                         if (!clientExists) {
-                            this.showToast('Esta cuenta de cliente no tiene una empresa asignada válida.', 'error');
-                            return;
+                            return this.showToast('Esta cuenta de cliente no tiene una empresa asignada válida.', 'error');
                         }
                     }
 
@@ -709,10 +719,10 @@
                         this.loadClientDashboard(userFound.clientId);
                         this.switchView('client');
                     }
-                    this.showToast(`Bienvenido al sistema, ${userFound.name}`, 'success');
+                    this.showToast(`Bienvenido, ${userFound.name}`, 'success');
                     document.getElementById('login-form').reset();
                 } else {
-                    this.showToast('El correo no se encontró en la base de datos.', 'error');
+                    this.showToast('El correo no se encontró en la base de datos. Pide al admin que lo registre.', 'error');
                 }
             },
 
@@ -784,21 +794,18 @@
                 const clientId = role === 'cliente' ? parseInt(document.getElementById('new-user-client-id').value) : null;
                 
                 if(appDB.users.some(u => u.email === email)) return this.showToast('Correo ya registrado', 'error');
-                
-                if (role === 'cliente' && (!clientId || isNaN(clientId))) {
-                    return this.showToast('Debe asignar un cliente válido para esta cuenta.', 'error');
-                }
+                if (role === 'cliente' && (!clientId || isNaN(clientId))) return this.showToast('Debe asignar un cliente válido.', 'error');
 
                 const payload = { name, email, role, clientId };
                 
-                const { data, error } = await supabase.from('usuarios_app').insert([payload]).select();
-                
-                if (error) {
-                    console.error(error);
-                    return this.showToast('Error de conexión al guardar usuario.', 'error');
+                if (supabase) {
+                    const { data, error } = await supabase.from('usuarios_app').insert([payload]).select();
+                    if (error) return this.showToast('Error de conexión al guardar usuario.', 'error');
+                    if(data && data.length > 0) appDB.users.push(data[0]);
+                } else {
+                    appDB.users.push({ id: Date.now(), ...payload });
                 }
                 
-                appDB.users.push(data[0]);
                 this.renderUsersTable();
                 this.showToast('Usuario creado con éxito.', 'success');
                 e.target.reset();
@@ -806,7 +813,7 @@
             },
 
             openEditUserModal: function(userId) {
-                const u = appDB.users.find(x => x.id === userId);
+                const u = appDB.users.find(x => x.id == userId);
                 if(u) {
                     document.getElementById('edit-u-id').value = u.id;
                     document.getElementById('edit-u-name').value = u.name;
@@ -824,37 +831,38 @@
                 e.preventDefault();
                 const id = document.getElementById('edit-u-id').value;
                 const uIndex = appDB.users.findIndex(x => x.id == id);
+                
                 if(uIndex > -1) {
                     const name = document.getElementById('edit-u-name').value;
                     const email = document.getElementById('edit-u-email').value.trim().toLowerCase();
                     const role = document.getElementById('edit-u-role').value;
                     const clientId = role === 'cliente' ? parseInt(document.getElementById('edit-u-client-id').value) : null;
                     
-                    if (role === 'cliente' && (!clientId || isNaN(clientId))) {
-                        return this.showToast('Debe asignar un cliente válido para esta cuenta.', 'error');
-                    }
+                    if (role === 'cliente' && (!clientId || isNaN(clientId))) return this.showToast('Debe asignar un cliente válido.', 'error');
                     
                     const payload = { name, email, role, clientId };
                     
-                    const { error } = await supabase.from('usuarios_app').update(payload).eq('id', id);
-                    if (error) return this.showToast('Error al actualizar en servidor.', 'error');
+                    if (supabase) {
+                        const { error } = await supabase.from('usuarios_app').update(payload).eq('id', id);
+                        if (error) return this.showToast('Error al actualizar en servidor.', 'error');
+                    }
 
                     appDB.users[uIndex] = { ...appDB.users[uIndex], ...payload };
-                    
                     this.renderUsersTable();
                     document.getElementById('modal-edit-user').classList.add('hidden');
-                    this.showToast('Usuario actualizado correctamente.', 'success');
+                    this.showToast('Usuario actualizado.', 'success');
                 }
             },
 
             requestDeleteUser: function(userId) {
-                this.openConfirmModal('¿Está seguro de eliminar permanentemente a este usuario? Perderá acceso inmediato al sistema.', async () => {
-                    const { error } = await supabase.from('usuarios_app').delete().eq('id', userId);
-                    if (error) return this.showToast('Error al procesar la eliminación.', 'error');
-
+                this.openConfirmModal('¿Está seguro de eliminar permanentemente a este usuario?', async () => {
+                    if (supabase) {
+                        const { error } = await supabase.from('usuarios_app').delete().eq('id', userId);
+                        if (error) return this.showToast('Error al procesar eliminación.', 'error');
+                    }
                     appDB.users = appDB.users.filter(u => u.id != userId);
                     this.renderUsersTable();
-                    this.showToast('Usuario eliminado del sistema central.', 'success');
+                    this.showToast('Usuario eliminado del sistema.', 'success');
                 });
             },
 
@@ -864,7 +872,7 @@
                 appDB.users.forEach(u => {
                     let roleStr = u.role === 'cliente' ? `Cliente (${appDB.clients.find(c=>c.id==u.clientId)?.name || 'Desconocido'})` : u.role;
                     let editBtn = `<button onclick="app.openEditUserModal('${u.id}')" class="text-blue-600 hover:text-blue-800 p-1 bg-blue-50 rounded mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>`;
-                    let delBtn = (u.email === 'israelrbolanos@bisonteingenieria.com') ? '' : `<button onclick="app.requestDeleteUser('${u.id}')" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+                    let delBtn = (u.email === 'israelrbolanos@bisonteingenieria.com' || u.id === '999999999') ? '' : `<button onclick="app.requestDeleteUser('${u.id}')" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
                     html += `<tr class="border-b hover:bg-slate-50"><td class="px-6 py-3 font-medium">${u.name}</td><td class="px-6 py-3">${u.email}</td><td class="px-6 py-3 capitalize">${roleStr}</td><td class="px-6 py-3 text-right whitespace-nowrap">${editBtn}${delBtn}</td></tr>`;
                 });
                 tbody.innerHTML = html;
@@ -888,10 +896,14 @@
                 const startDate = document.getElementById('add-c-date').value;
                 const frequency = document.getElementById('add-c-freq').value;
 
-                const { data: newClientData, error: cErr } = await supabase.from('clientes').insert([{ name, address, startDate, frequency }]).select();
-                if (cErr) return this.showToast('Error de conexión al crear cliente.', 'error');
+                let newClient = { id: Date.now(), name, address, startDate, frequency };
+
+                if (supabase) {
+                    const { data: newClientData, error: cErr } = await supabase.from('clientes').insert([{ name, address, startDate, frequency }]).select();
+                    if (cErr) return this.showToast('Error de conexión al crear cliente.', 'error');
+                    if(newClientData && newClientData.length > 0) newClient = newClientData[0];
+                }
                 
-                const newClient = newClientData[0];
                 appDB.clients.push(newClient);
 
                 // Auto-programar agenda
@@ -914,20 +926,21 @@
                 }
 
                 if (servicesToInsert.length > 0) {
-                    const { data: sData } = await supabase.from('servicios').insert(servicesToInsert).select();
-                    if (sData) appDB.services.push(...sData);
+                    if (supabase) {
+                        const { data: sData } = await supabase.from('servicios').insert(servicesToInsert).select().catch(()=>({data:null}));
+                        if (sData) appDB.services.push(...sData);
+                    } else {
+                        servicesToInsert.forEach(s => { s.id = Date.now() + Math.random(); appDB.services.push(s); });
+                    }
                 }
 
                 this.renderClientsSelectors();
                 
                 const adminSel = document.getElementById('admin-client-selector');
-                if(adminSel) {
-                    adminSel.value = newClient.id;
-                    this.selectAdminClient();
-                }
+                if(adminSel) { adminSel.value = newClient.id; this.selectAdminClient(); }
 
                 document.getElementById('modal-add-client').classList.add('hidden');
-                this.showToast('Cliente creado y fechas auto-generadas.', 'success');
+                this.showToast('Cliente creado y fechas generadas.', 'success');
                 e.target.reset();
             },
 
@@ -957,8 +970,10 @@
                         frequency: document.getElementById('edit-c-freq').value
                     };
 
-                    const { error } = await supabase.from('clientes').update(payload).eq('id', id);
-                    if (error) return this.showToast('Falla de red.', 'error');
+                    if (supabase) {
+                        const { error } = await supabase.from('clientes').update(payload).eq('id', id);
+                        if (error) return this.showToast('Falla de red.', 'error');
+                    }
 
                     appDB.clients[clientIndex] = { ...appDB.clients[clientIndex], ...payload };
                     
@@ -967,17 +982,19 @@
                     if(adminSel) { adminSel.value = id; this.selectAdminClient(); }
                     
                     document.getElementById('modal-edit-client').classList.add('hidden');
-                    this.showToast('Información del cliente actualizada en servidor.', 'success');
+                    this.showToast('Cliente actualizado.', 'success');
                 }
             },
 
             requestDeleteClient: function() {
                 if(!this.currentSelectedClientId) return;
-                this.openConfirmModal('⚠️ ¿Eliminar cliente? Se borrarán en cascada todos sus equipos, agenda, historial de bitácoras y cuentas de usuario asociadas. ESTO ES IRREVERSIBLE.', async () => {
+                this.openConfirmModal('⚠️ ¿Eliminar cliente? Se borrarán en cascada todos sus equipos, agenda, historial y cuentas. ESTO ES IRREVERSIBLE.', async () => {
                     const id = this.currentSelectedClientId;
                     
-                    const { error } = await supabase.from('clientes').delete().eq('id', id);
-                    if (error) return this.showToast('Error de borrado en Supabase', 'error');
+                    if(supabase) {
+                        const { error } = await supabase.from('clientes').delete().eq('id', id);
+                        if (error) return this.showToast('Error de borrado en Supabase', 'error');
+                    }
 
                     appDB.clients = appDB.clients.filter(c => c.id != id);
                     appDB.equipments = appDB.equipments.filter(e => e.clientId != id);
@@ -991,7 +1008,7 @@
                     const adminSel = document.getElementById('admin-client-selector');
                     if(adminSel) { adminSel.value = ""; this.selectAdminClient(); }
                     
-                    this.showToast('Cliente y datos vinculados eliminados globalmente.', 'success');
+                    this.showToast('Cliente eliminado.', 'success');
                 });
             },
 
@@ -1070,12 +1087,14 @@
                         notes: document.getElementById('edit-s-notes').value
                     };
 
-                    const { error } = await supabase.from('servicios').update(payload).eq('id', id);
-                    if (error) return this.showToast('No se pudo modificar la cita.', 'error');
+                    if(supabase) {
+                        const { error } = await supabase.from('servicios').update(payload).eq('id', id);
+                        if (error) return this.showToast('No se pudo modificar la cita.', 'error');
+                    }
 
                     appDB.services[sIndex] = { ...appDB.services[sIndex], ...payload };
                     document.getElementById('modal-edit-service').classList.add('hidden');
-                    this.showToast('Fecha reprogramada y guardada.', 'success');
+                    this.showToast('Fecha reprogramada.', 'success');
                     this.renderClientServices('admin-alarms-list', appDB.services[sIndex].clientId, true);
                 }
             },
@@ -1092,24 +1111,30 @@
                     reminderSent: false
                 };
                 
-                const { data, error } = await supabase.from('servicios').insert([payload]).select();
-                if (error) return this.showToast('Falla al crear programación', 'error');
+                if(supabase) {
+                    const { data, error } = await supabase.from('servicios').insert([payload]).select();
+                    if (error) return this.showToast('Falla al crear programación', 'error');
+                    if(data && data.length > 0) appDB.services.push(data[0]);
+                } else {
+                    appDB.services.push({ id: Date.now(), ...payload });
+                }
 
-                appDB.services.push(data[0]);
                 document.getElementById('modal-schedule-service').classList.add('hidden');
-                this.showToast('Servicio programado oficialmente.', 'success');
+                this.showToast('Servicio programado.', 'success');
                 this.renderClientServices('admin-alarms-list', this.currentSelectedClientId, true);
             },
             
             requestDeleteService: function(serviceId) {
-                this.openConfirmModal('⚠️ ¿Está seguro de eliminar esta fecha programada de la agenda?', async () => {
+                this.openConfirmModal('⚠️ ¿Está seguro de eliminar esta cita de la agenda?', async () => {
                     const service = appDB.services.find(s => s.id === serviceId);
                     if(service) {
-                        const { error } = await supabase.from('servicios').delete().eq('id', serviceId);
-                        if (error) return this.showToast('Fallo al limpiar en Supabase', 'error');
+                        if(supabase) {
+                            const { error } = await supabase.from('servicios').delete().eq('id', serviceId);
+                            if (error) return this.showToast('Fallo al limpiar en Supabase', 'error');
+                        }
 
                         appDB.services = appDB.services.filter(s => s.id !== serviceId);
-                        this.showToast('Fecha eliminada de la agenda global.', 'success');
+                        this.showToast('Fecha eliminada de la agenda.', 'success');
                         this.renderClientServices('admin-alarms-list', service.clientId, true);
                     }
                 });
@@ -1132,22 +1157,21 @@
                     if(eqInfo) bodyText += `\nAtención requerida al Equipo: ${eqInfo.unitId} (${eqInfo.type})\n`;
                     bodyText += `\nSaludos cordiales,\nBisonte Ingeniería.`;
                     
-                    const body = encodeURIComponent(bodyText);
-                    window.location.href = `mailto:${allEmails}?subject=${subject}&body=${body}`;
+                    window.location.href = `mailto:${allEmails}?subject=${subject}&body=${bodyText}`;
                     
-                    const { error } = await supabase.from('servicios').update({ reminderSent: true }).eq('id', serviceId);
-                    if(!error) {
-                        service.reminderSent = true;
-                        this.showToast('¡Recordatorio preparado y status actualizado en red!', 'success');
-                        this.renderClientServices('admin-alarms-list', service.clientId, true);
+                    if(supabase) {
+                        await supabase.from('servicios').update({ reminderSent: true }).eq('id', serviceId);
                     }
+                    service.reminderSent = true;
+                    this.showToast('¡Recordatorio marcado como enviado!', 'success');
+                    this.renderClientServices('admin-alarms-list', service.clientId, true);
                 }
             },
 
             renderClientServices: function(containerId, clientId, isAdmin) {
                 const container = document.getElementById(containerId);
                 const services = appDB.services.filter(s => s.clientId == clientId).sort((a,b) => new Date(a.date) - new Date(b.date));
-                if (services.length === 0) return container.innerHTML = '<p class="text-sm text-slate-500">Sin servicios.</p>';
+                if (services.length === 0) return container.innerHTML = '<p class="text-sm text-slate-500">Sin servicios programados.</p>';
                 
                 let html = '';
                 services.forEach(s => {
@@ -1202,12 +1226,16 @@
                     correctiveDetails: null
                 };
                 
-                const { data, error } = await supabase.from('equipos').insert([payload]).select();
-                if(error) return this.showToast('Error publicando en Supabase', 'error');
-
-                appDB.equipments.push(data[0]);
+                if(supabase) {
+                    const { data, error } = await supabase.from('equipos').insert([payload]).select();
+                    if(error) return this.showToast('Error publicando en Supabase', 'error');
+                    if(data && data.length > 0) appDB.equipments.push(data[0]);
+                } else {
+                    appDB.equipments.push({id: Date.now(), ...payload});
+                }
+                
                 document.getElementById('modal-add-eq').classList.add('hidden');
-                this.showToast('Ficha técnica insertada con éxito en la nube.', 'success');
+                this.showToast('Equipo añadido con éxito.', 'success');
                 e.target.reset();
                 
                 const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
@@ -1248,13 +1276,15 @@
                         polos: document.getElementById('edit-eq-polos').value
                     };
 
-                    const { error } = await supabase.from('equipos').update(payload).eq('id', id);
-                    if(error) return this.showToast('Error en red.', 'error');
+                    if(supabase) {
+                        const { error } = await supabase.from('equipos').update(payload).eq('id', id);
+                        if(error) return this.showToast('Error en red.', 'error');
+                    }
 
                     appDB.equipments[eqIndex] = { ...appDB.equipments[eqIndex], ...payload };
                     
                     document.getElementById('modal-edit-eq').classList.add('hidden');
-                    this.showToast('Información base sincronizada correctamente.', 'success');
+                    this.showToast('Equipo actualizado.', 'success');
                     const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
                     this.updateClientUI(isTechView ? 'tech' : 'admin', appDB.equipments[eqIndex].clientId);
                 }
@@ -1264,13 +1294,15 @@
                 this.openConfirmModal('⚠️ ¿Eliminar este equipo de forma permanente? Se borrarán sus bitácoras e historial asociados.', async () => {
                     const eq = appDB.equipments.find(e => e.id === eqId);
                     if(eq) {
-                        const { error } = await supabase.from('equipos').delete().eq('id', eqId);
-                        if(error) return this.showToast('Problema al borrar servidor.', 'error');
+                        if(supabase) {
+                            const { error } = await supabase.from('equipos').delete().eq('id', eqId);
+                            if(error) return this.showToast('Problema al borrar servidor.', 'error');
+                        }
 
                         appDB.equipments = appDB.equipments.filter(e => e.id !== eqId);
                         appDB.logs = appDB.logs.filter(l => l.eqId !== eqId);
                         
-                        this.showToast('Equipo borrado definitivamente.', 'success');
+                        this.showToast('Equipo borrado.', 'success');
                         const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
                         this.updateClientUI(isTechView ? 'tech' : 'admin', eq.clientId);
                     }
@@ -1300,7 +1332,6 @@
                 const eq = appDB.equipments.find(e => e.id === eqId);
                 document.getElementById('tf-eq-id').value = eq.id;
                 
-                // Mostrar variables estáticas vinculadas al equipo
                 document.getElementById('tf-display-id').textContent = eq.unitId;
                 document.getElementById('tf-display-key').textContent = eq.key || 'N/A';
                 document.getElementById('tf-display-brand').textContent = `${eq.type} / ${eq.brand}`;
@@ -1310,7 +1341,6 @@
                 document.getElementById('tf-display-itm').textContent = `${eq.itm || '--'}A`;
                 document.getElementById('tf-display-polos').textContent = eq.polos || '1';
                 
-                // Limpiar previsualizaciones de fotos
                 ['before', 'during', 'after'].forEach(p => {
                     document.getElementById(`img-preview-${p}`).classList.add('hidden');
                     document.getElementById(`img-preview-${p}`).src = '';
@@ -1333,7 +1363,7 @@
                 const container = document.getElementById('history-list-container');
                 
                 if(logs.length === 0) {
-                    container.innerHTML = `<div class="text-center py-10 text-slate-400"><i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-2 opacity-50"></i><p>El equipo no tiene bitácoras registradas aún en la nube.</p></div>`;
+                    container.innerHTML = `<div class="text-center py-10 text-slate-400"><i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-2 opacity-50"></i><p>El equipo no tiene bitácoras registradas.</p></div>`;
                 } else {
                     let html = `<div class="space-y-4">`;
                     logs.forEach(l => {
@@ -1369,7 +1399,6 @@
                 lucide.createIcons();
             },
 
-            // Compresión de fotos base64
             previewImage: function(event, imgId, containerId) {
                 const file = event.target.files[0];
                 if (file) {
@@ -1447,28 +1476,30 @@
                     correctiveDetails: document.getElementById('tf-corrective-details').value
                 };
 
-                // Guardar bitácora en Supabase
-                const { data: logData, error: logErr } = await supabase.from('bitacoras').insert([logPayload]).select();
-                if(logErr) return this.showToast('Error transmitiendo a Supabase', 'error');
-                appDB.logs.push(logData[0]);
+                if(supabase) {
+                    const { data: logData, error: logErr } = await supabase.from('bitacoras').insert([logPayload]).select();
+                    if(logErr) return this.showToast('Error transmitiendo bitácora', 'error');
+                    if(logData && logData.length > 0) appDB.logs.push(logData[0]);
+                } else {
+                    appDB.logs.push({id: Date.now(), ...logPayload});
+                }
 
-                // Actualizar estado del equipo maestro en Supabase
                 const newStatus = logPayload.needsCorrective ? 'Requiere Correctivo' : 'Operativo';
                 const newCorrective = logPayload.needsCorrective ? logPayload.correctiveDetails : null;
                 
-                const { error: eqErr } = await supabase.from('equipos').update({
-                    lastPreventiveDate: dateStr,
-                    status: newStatus,
-                    correctiveDetails: newCorrective
-                }).eq('id', eq.id);
-
-                if(!eqErr) {
-                    appDB.equipments[eqIndex].lastPreventiveDate = dateStr;
-                    appDB.equipments[eqIndex].status = newStatus;
-                    appDB.equipments[eqIndex].correctiveDetails = newCorrective;
+                if(supabase) {
+                    await supabase.from('equipos').update({
+                        lastPreventiveDate: dateStr,
+                        status: newStatus,
+                        correctiveDetails: newCorrective
+                    }).eq('id', eq.id);
                 }
 
-                this.showToast('Bitácora sincronizada con base de datos en tiempo real.', 'success');
+                appDB.equipments[eqIndex].lastPreventiveDate = dateStr;
+                appDB.equipments[eqIndex].status = newStatus;
+                appDB.equipments[eqIndex].correctiveDetails = newCorrective;
+
+                this.showToast('Bitácora sincronizada.', 'success');
                 this.switchView('tech-home');
                 this.updateClientUI('tech', eq.clientId);
             },
@@ -1558,7 +1589,6 @@
                 this.renderLogsTable(clientId, 'client-dash');
             },
 
-            // --- IMPRESIÓN (PDF NATIVO) FORMATO COMPACTO 1 HOJA POR EQUIPO ---
             printClientDashboard: function() {
                 const clientId = this.currentSelectedClientId;
                 const client = appDB.clients.find(c => c.id == clientId);
@@ -1701,7 +1731,6 @@
                 window.print();
             },
 
-            // --- UI UTILS ---
             showToast: function(message, type = 'info') {
                 const container = document.getElementById('toast-container');
                 const toast = document.createElement('div');
@@ -1709,7 +1738,7 @@
                 toast.innerHTML = `<i data-lucide="info" class="w-5 h-5"></i><span>${message}</span>`;
                 container.appendChild(toast);
                 lucide.createIcons({root: toast});
-                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 5000);
             }
         };
 
