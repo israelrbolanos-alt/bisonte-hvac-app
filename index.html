@@ -6,8 +6,9 @@
     <title>Bisonte Ingeniería - App HVAC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -18,6 +19,7 @@
         .photo-upload-label { cursor: pointer; transition: all 0.2s; }
         .photo-upload-label:hover { background-color: #f8fafc; border-color: #3b82f6; }
         
+        /* Estilos específicos para Impresión (PDF) compactados para 1 Hoja/Equipo */
         @media print {
             body { background: white !important; font-size: 11px; }
             #navbar, #footer, #toast-container, main > div:not(#print-view) { display: none !important; }
@@ -78,7 +80,7 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1">PIN Maestro de Acceso</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i data-lucide="key" class="w-5 h-5 text-slate-400"></i></div>
-                            <input type="password" id="login-pin" required class="pl-10 w-full rounded-lg border-slate-300 border p-2.5 focus:ring-blue-500" placeholder="Ingrese el PIN Maestro">
+                            <input type="password" id="login-pin" required class="pl-10 w-full rounded-lg border-slate-300 border p-2.5 focus:ring-blue-500" placeholder="Ingrese el PIN maestro">
                         </div>
                     </div>
                     <button type="submit" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
@@ -216,7 +218,8 @@
                     <div class="p-0 overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="bg-slate-50 text-slate-500 border-b"><tr><th class="px-4 py-3">Componente</th><th class="px-4 py-3 w-40">Estado</th><th class="px-4 py-3">Observaciones / Limpieza</th></tr></thead>
-                            <tbody class="divide-y divide-slate-100" id="components-list"></tbody>
+                            <tbody class="divide-y divide-slate-100" id="components-list">
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -294,14 +297,14 @@
         <div id="view-users" class="hidden-view p-4 md:p-8 max-w-5xl mx-auto fade-in pb-24 no-print">
             <div class="mb-6">
                 <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="users" class="text-blue-600"></i> Gestión de Usuarios</h2>
-                <p class="text-slate-500">Crea y administra accesos al sistema. El acceso siempre será mediante el PIN Maestro.</p>
+                <p class="text-slate-500">Crea y administra accesos al sistema.</p>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm self-start">
                     <h3 class="font-bold text-slate-800 mb-4 border-b pb-2">Registrar Usuario</h3>
                     <form onsubmit="app.addUser(event)" class="space-y-4">
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="new-user-name" required class="w-full border rounded p-2 text-sm"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo (Identificador)</label><input type="email" id="new-user-email" required class="w-full border rounded p-2 text-sm"></div>
+                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo (Login)</label><input type="email" id="new-user-email" required class="w-full border rounded p-2 text-sm"></div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Rol</label>
                             <select id="new-user-role" required class="w-full border rounded p-2 text-sm bg-white" onchange="document.getElementById('client-select-container').style.display = this.value === 'cliente' ? 'block' : 'none'">
@@ -404,7 +407,8 @@
                     <h3 class="font-bold flex items-center gap-2 text-lg"><i data-lucide="clock" class="w-5 h-5"></i> Historial de Intervenciones - <span id="history-eq-id" class="text-indigo-200"></span></h3>
                     <button type="button" onclick="document.getElementById('modal-eq-history').classList.add('hidden')" class="p-1 hover:bg-indigo-800 rounded transition-colors"><i data-lucide="x"></i></button>
                 </div>
-                <div class="p-6 overflow-y-auto flex-1 bg-slate-100" id="history-list-container"></div>
+                <div class="p-6 overflow-y-auto flex-1 bg-slate-100" id="history-list-container">
+                    </div>
             </div>
         </div>
 
@@ -417,7 +421,7 @@
                     <p id="confirm-message" class="text-slate-700 mb-6 text-sm">¿Está seguro de que desea realizar esta acción?</p>
                     <div class="flex justify-end gap-2">
                         <button type="button" onclick="app.closeConfirmModal()" class="px-4 py-2 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 text-sm font-medium">Cancelar</button>
-                        <button type="button" id="confirm-action-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700">Sí, Continuar</button>
+                        <button type="button" id="confirm-action-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700">Sí, Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -432,7 +436,7 @@
                 <form onsubmit="app.saveEditUser(event)" class="p-6 space-y-4">
                     <input type="hidden" id="edit-u-id">
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label><input type="text" id="edit-u-name" required class="w-full border rounded p-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo (Identificador)</label><input type="email" id="edit-u-email" required class="w-full border rounded p-2 text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Correo (Login)</label><input type="email" id="edit-u-email" required class="w-full border rounded p-2 text-sm"></div>
                     <div>
                         <label class="block text-xs font-medium text-slate-600 mb-1">Rol</label>
                         <select id="edit-u-role" required class="w-full border rounded p-2 text-sm bg-white" onchange="document.getElementById('edit-u-client-container').style.display = this.value === 'cliente' ? 'block' : 'none'">
@@ -494,8 +498,7 @@
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Nuevo Equipo (Ficha Técnica)</h3><button type="button" onclick="document.getElementById('modal-add-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
                 <form onsubmit="app.saveEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="add-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="add-eq-key" required class="w-full border rounded p-2 text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-600 mb-1">ID / Clave (Ej. AC-01)</label><input type="text" id="add-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Tipo</label><select id="add-eq-type" required class="w-full border rounded p-2 text-sm bg-white"><option value="">Seleccione...</option><option>Minisplit</option><option>Paquete / RoofTop</option><option>Dividido</option><option>Chiller</option></select></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Marca</label><input type="text" id="add-eq-brand" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Ubicación</label><input type="text" id="add-eq-location" required class="w-full border rounded p-2 text-sm"></div>
@@ -521,8 +524,7 @@
                 <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white"><h3 class="font-bold">Editar Ficha del Equipo</h3><button type="button" onclick="document.getElementById('modal-edit-eq').classList.add('hidden')" class="p-1"><i data-lucide="x"></i></button></div>
                 <form onsubmit="app.saveEditEquipment(event)" class="p-6 grid grid-cols-2 gap-4">
                     <input type="hidden" id="edit-eq-id">
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">ID (Ej. AC-01)</label><input type="text" id="edit-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-slate-600 mb-1">Clave</label><input type="text" id="edit-eq-key" required class="w-full border rounded p-2 text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-600 mb-1">ID / Clave (Ej. AC-01)</label><input type="text" id="edit-eq-unitId" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Tipo</label><select id="edit-eq-type" required class="w-full border rounded p-2 text-sm bg-white"><option value="">Seleccione...</option><option>Minisplit</option><option>Paquete / RoofTop</option><option>Dividido</option><option>Chiller</option></select></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Marca</label><input type="text" id="edit-eq-brand" required class="w-full border rounded p-2 text-sm"></div>
                     <div><label class="block text-xs font-medium text-slate-600 mb-1">Ubicación</label><input type="text" id="edit-eq-location" required class="w-full border rounded p-2 text-sm"></div>
@@ -603,28 +605,18 @@
     <script>
         lucide.createIcons();
 
-        // -------------------------------------------------------------
-        // BLINDAJE SUPABASE: Inicialización protegida
-        // -------------------------------------------------------------
-        let supabase = null;
-        const supabaseUrl = 'https://fdpravuvrwcgozbdhuua.supabase.co'; 
-        
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSGyL
-        // ⚠️ ¡¡NUNCA PONGAS LA "SECRET KEY" AQUÍ!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        const supabaseAnonKey = 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSGyL'; 
+        // ----------------------------------------------------
+        // INICIALIZACIÓN DE SUPABASE
+        // ----------------------------------------------------
+        const supabaseUrl = 'TU_SUPABASE_URL'; // LLENA ESTO CON TU URL
+        const supabaseKey = 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSGyL';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        try {
-            if (supabaseUrl && supabaseUrl.startsWith('http') && supabaseAnonKey !== 'sb_publishable_DkIcAK2gCnCkiNXTPYEaPw_loSfSGyL') {
-                supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
-            }
-        } catch (error) {
-            console.error("Error inicializando cliente Supabase:", error);
-        }
+        const MASTER_PIN = 'BISONTE2026'; // PIN de Acceso solicitado
 
         const hvacComponents = ["Serpentín Evaporador", "Serpentín Condensador", "Filtros de Aire", "Turbina / Ventilador", "Motor Condensadora", "Compresor", "Tarjeta PCB", "Capacitores", "Charola / Drenaje", "Aislamiento"];
 
+        // Estructura en memoria RAM (Se vacía al recargar, se llena con Supabase)
         const appDB = {
             users: [],
             clients: [],
@@ -639,95 +631,99 @@
             currentSelectedClientId: null,
             confirmCallback: null,
 
-            loadDB: async function() {
-                if (!supabase) return;
-                try {
-                    // .catch() silencioso para evitar que una tabla vacía/inexistente bloquee toda la web
-                    const [resUsers, resClients, resEqs, resServices, resLogs] = await Promise.all([
-                        supabase.from('usuarios_app').select('*').catch(()=>({data:null})), 
-                        supabase.from('clientes').select('*').catch(()=>({data:null})),
-                        supabase.from('equipos').select('*').catch(()=>({data:null})),
-                        supabase.from('servicios').select('*').catch(()=>({data:null})), 
-                        supabase.from('bitacoras').select('*').catch(()=>({data:null}))
-                    ]);
-                    
-                    if (resUsers && resUsers.data) appDB.users = resUsers.data;
-                    if (resClients && resClients.data) appDB.clients = resClients.data;
-                    if (resEqs && resEqs.data) appDB.equipments = resEqs.data;
-                    if (resServices && resServices.data) appDB.services = resServices.data;
-                    if (resLogs && resLogs.data) appDB.logs = resLogs.data;
-                } catch (e) {
-                    console.error("Error de Red Supabase", e);
-                }
-            },
-
-            init: async function() {
-                if(!supabase) {
-                    this.showToast('⚠️ Modo de Emergencia Local: Falta configurar la Clave Pública de Supabase en el código.', 'error');
-                } else {
-                    await this.loadDB();
-                }
+            init: function() {
                 this.renderComponentsTable();
-                this.renderUsersTable();
-                this.renderClientsSelectors();
+                // Eliminamos loadDB() de LocalStorage
             },
 
-            // --- NAVEGACIÓN Y LOGIN BLINDADO ---
-            handleLogin: function(e) {
+            // Carga todos los datos desde Supabase a memoria caché appDB
+            loadAllData: async function() {
+                try {
+                    // Usuarios
+                    const { data: usersData } = await supabase.from('usuarios_app').select('*');
+                    if (usersData) appDB.users = usersData.map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role, clientId: u.client_id }));
+
+                    // Clientes
+                    const { data: clientsData } = await supabase.from('clientes').select('*');
+                    if (clientsData) appDB.clients = clientsData.map(c => ({ id: c.id, name: c.name, address: c.address, startDate: c.start_date, frequency: c.frequency }));
+
+                    // Equipos
+                    const { data: eqData } = await supabase.from('equipos').select('*');
+                    if (eqData) appDB.equipments = eqData.map(e => ({
+                        id: e.id, clientId: e.client_id, unitId: e.unit_id, type: e.type, brand: e.brand, location: e.location, 
+                        capacity: e.capacity, gas: e.gas, itm: e.itm, polos: e.polos, status: e.status
+                    }));
+
+                    // Servicios
+                    const { data: servData } = await supabase.from('servicios').select('*');
+                    if (servData) appDB.services = servData.map(s => ({
+                        id: s.id, clientId: s.clientId, eqId: s.eqId, date: s.date, notes: s.notes, status: s.status, reminderSent: s.reminderSent
+                    }));
+
+                    // Bitácoras
+                    const { data: logData } = await supabase.from('bitacoras').select('*');
+                    if (logData) appDB.logs = logData.map(l => {
+                        const dateObj = new Date(l.created_at);
+                        return {
+                            id: l.id, eqId: parseInt(l.eq_id), clientId: l.client_id, techName: l.tech_name, 
+                            date: dateObj.toLocaleDateString('en-CA'), time: dateObj.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
+                            techComments: l.tech_comments, needsCorrective: l.needs_corrective, correctiveDetails: l.corrective_details,
+                            data: { volts: l.volts, amps: l.amps, psi: l.psi, temp: l.temp },
+                            components: l.components_json || [],
+                            photos: { before: l.foto_before, during: l.foto_during, after: l.foto_after }
+                        };
+                    });
+
+                    this.renderUsersTable();
+                    this.renderClientsSelectors();
+                } catch (e) {
+                    console.error("Error cargando base de datos", e);
+                    this.showToast("Error de conexión con la Base de Datos.", "error");
+                }
+            },
+
+            // --- NAVEGACIÓN Y LOGIN ---
+            handleLogin: async function(e) {
                 e.preventDefault();
-                const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
-                const pinInput = document.getElementById('login-pin').value.trim();
+                const emailInput = document.getElementById('login-email').value.toLowerCase();
+                const pinInput = document.getElementById('login-pin').value;
                 
-                if (pinInput !== 'BISONTE2026') {
-                    return this.showToast('Acceso Denegado: PIN Maestro incorrecto.', 'error');
+                if (pinInput !== MASTER_PIN) {
+                    return this.showToast('PIN maestro incorrecto o acceso denegado.', 'error');
                 }
                 
-                let userFound = appDB.users.find(u => u.email && u.email.toLowerCase() === emailInput);
+                // Consulta en Supabase
+                const { data: users, error } = await supabase.from('usuarios_app').select('*').eq('email', emailInput);
+                
+                if (error || !users || users.length === 0) {
+                    return this.showToast('Usuario no encontrado en la base de datos.', 'error');
+                }
 
-                // --- ACCESO MAESTRO DE RESPALDO (BOOTSTRAP) ---
-                // Si tú pones tu correo, pero la base de datos está vacía, te dejará entrar a la fuerza
-                // para que puedas usar el panel "Gestión de Usuarios" y crearte oficialmente.
-                if (!userFound && emailInput === 'israelrbolanos@bisonteingenieria.com') {
-                    userFound = {
-                        id: '999999999', 
-                        name: 'Israel R. (Admin Respaldo)',
-                        email: 'israelrbolanos@bisonteingenieria.com',
-                        role: 'admin',
-                        clientId: null
-                    };
-                    this.showToast('Modo de Alta activado. Por favor ingresa a "Gestión de Usuarios" y registra este correo oficialmente en la Nube.', 'info');
-                }
-                
-                if (userFound) {
-                    if (userFound.role === 'cliente') {
-                        const clientExists = appDB.clients.find(c => c.id == userFound.clientId);
-                        if (!clientExists) {
-                            return this.showToast('Esta cuenta de cliente no tiene una empresa asignada válida.', 'error');
-                        }
-                    }
+                const userFound = users[0];
 
-                    this.currentUser = { ...userFound, displayName: userFound.name };
-                    document.getElementById('user-display-name').textContent = userFound.name;
-                    document.getElementById('user-display-role').textContent = `Rol: ${userFound.role}`;
-                    
-                    this.updateNavigation();
-                    
-                    if(userFound.role === 'admin') this.switchView('clients-admin');
-                    else if (userFound.role === 'tecnico') this.switchView('tech-home');
-                    else {
-                        this.currentSelectedClientId = userFound.clientId;
-                        this.loadClientDashboard(userFound.clientId);
-                        this.switchView('client');
-                    }
-                    this.showToast(`Bienvenido, ${userFound.name}`, 'success');
-                    document.getElementById('login-form').reset();
-                } else {
-                    this.showToast('El correo no se encontró en la base de datos. Pide al admin que lo registre.', 'error');
+                this.currentUser = { ...userFound, displayName: userFound.name, clientId: userFound.client_id };
+                document.getElementById('user-display-name').textContent = userFound.name;
+                document.getElementById('user-display-role').textContent = `Rol: ${userFound.role}`;
+                
+                this.showToast('Autenticando y cargando información...', 'info');
+                await this.loadAllData(); // Carga de DB real post-login
+                
+                this.updateNavigation();
+                
+                if(userFound.role === 'admin') this.switchView('clients-admin');
+                else if (userFound.role === 'tecnico') this.switchView('tech-home');
+                else {
+                    this.currentSelectedClientId = userFound.client_id;
+                    this.loadClientDashboard(userFound.client_id);
+                    this.switchView('client');
                 }
+                this.showToast(`Bienvenido, ${userFound.name}`, 'success');
+                document.getElementById('login-form').reset();
             },
 
             logout: function() {
                 this.currentUser = null;
+                appDB.users = []; appDB.clients = []; appDB.services = []; appDB.equipments = []; appDB.logs = [];
                 this.switchView('login');
             },
 
@@ -789,40 +785,29 @@
             addUser: async function(e) {
                 e.preventDefault();
                 const name = document.getElementById('new-user-name').value;
-                const email = document.getElementById('new-user-email').value.trim().toLowerCase();
+                const email = document.getElementById('new-user-email').value;
                 const role = document.getElementById('new-user-role').value;
                 const clientId = role === 'cliente' ? parseInt(document.getElementById('new-user-client-id').value) : null;
                 
                 if(appDB.users.some(u => u.email === email)) return this.showToast('Correo ya registrado', 'error');
-                if (role === 'cliente' && (!clientId || isNaN(clientId))) return this.showToast('Debe asignar un cliente válido.', 'error');
+                if (role === 'cliente' && (!clientId || isNaN(clientId))) return this.showToast('Debe asignar un cliente válido para esta cuenta.', 'error');
 
-                const payload = { name, email, role, clientId };
-                
-                if (supabase) {
-                    const { data, error } = await supabase.from('usuarios_app').insert([payload]).select();
-                    if (error) return this.showToast('Error de conexión al guardar usuario.', 'error');
-                    if(data && data.length > 0) appDB.users.push(data[0]);
-                } else {
-                    appDB.users.push({ id: Date.now(), ...payload });
-                }
-                
-                this.renderUsersTable();
-                this.showToast('Usuario creado con éxito.', 'success');
+                await supabase.from('usuarios_app').insert({ name, email, role, client_id: clientId });
+                await this.loadAllData();
+                this.showToast('Usuario creado.', 'success');
                 e.target.reset();
                 document.getElementById('client-select-container').style.display = 'none';
             },
 
             openEditUserModal: function(userId) {
-                const u = appDB.users.find(x => x.id == userId);
+                const u = appDB.users.find(x => x.id === userId);
                 if(u) {
                     document.getElementById('edit-u-id').value = u.id;
                     document.getElementById('edit-u-name').value = u.name;
                     document.getElementById('edit-u-email').value = u.email;
                     document.getElementById('edit-u-role').value = u.role;
                     document.getElementById('edit-u-client-container').style.display = u.role === 'cliente' ? 'block' : 'none';
-                    if(u.role === 'cliente' && u.clientId) {
-                        document.getElementById('edit-u-client-id').value = u.clientId;
-                    }
+                    if(u.role === 'cliente' && u.clientId) document.getElementById('edit-u-client-id').value = u.clientId;
                     document.getElementById('modal-edit-user').classList.remove('hidden');
                 }
             },
@@ -830,39 +815,22 @@
             saveEditUser: async function(e) {
                 e.preventDefault();
                 const id = document.getElementById('edit-u-id').value;
-                const uIndex = appDB.users.findIndex(x => x.id == id);
+                const name = document.getElementById('edit-u-name').value;
+                const email = document.getElementById('edit-u-email').value;
+                const role = document.getElementById('edit-u-role').value;
+                const client_id = role === 'cliente' ? parseInt(document.getElementById('edit-u-client-id').value) : null;
                 
-                if(uIndex > -1) {
-                    const name = document.getElementById('edit-u-name').value;
-                    const email = document.getElementById('edit-u-email').value.trim().toLowerCase();
-                    const role = document.getElementById('edit-u-role').value;
-                    const clientId = role === 'cliente' ? parseInt(document.getElementById('edit-u-client-id').value) : null;
-                    
-                    if (role === 'cliente' && (!clientId || isNaN(clientId))) return this.showToast('Debe asignar un cliente válido.', 'error');
-                    
-                    const payload = { name, email, role, clientId };
-                    
-                    if (supabase) {
-                        const { error } = await supabase.from('usuarios_app').update(payload).eq('id', id);
-                        if (error) return this.showToast('Error al actualizar en servidor.', 'error');
-                    }
-
-                    appDB.users[uIndex] = { ...appDB.users[uIndex], ...payload };
-                    this.renderUsersTable();
-                    document.getElementById('modal-edit-user').classList.add('hidden');
-                    this.showToast('Usuario actualizado.', 'success');
-                }
+                await supabase.from('usuarios_app').update({ name, email, role, client_id }).eq('id', id);
+                await this.loadAllData();
+                document.getElementById('modal-edit-user').classList.add('hidden');
+                this.showToast('Usuario actualizado.', 'success');
             },
 
             requestDeleteUser: function(userId) {
-                this.openConfirmModal('¿Está seguro de eliminar permanentemente a este usuario?', async () => {
-                    if (supabase) {
-                        const { error } = await supabase.from('usuarios_app').delete().eq('id', userId);
-                        if (error) return this.showToast('Error al procesar eliminación.', 'error');
-                    }
-                    appDB.users = appDB.users.filter(u => u.id != userId);
-                    this.renderUsersTable();
-                    this.showToast('Usuario eliminado del sistema.', 'success');
+                this.openConfirmModal('¿Está seguro de eliminar permanentemente a este usuario? Perderá acceso inmediato al sistema.', async () => {
+                    await supabase.from('usuarios_app').delete().eq('id', userId);
+                    await this.loadAllData();
+                    this.showToast('Usuario eliminado.', 'success');
                 });
             },
 
@@ -871,8 +839,8 @@
                 let html = '';
                 appDB.users.forEach(u => {
                     let roleStr = u.role === 'cliente' ? `Cliente (${appDB.clients.find(c=>c.id==u.clientId)?.name || 'Desconocido'})` : u.role;
-                    let editBtn = `<button onclick="app.openEditUserModal('${u.id}')" class="text-blue-600 hover:text-blue-800 p-1 bg-blue-50 rounded mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>`;
-                    let delBtn = (u.email === 'israelrbolanos@bisonteingenieria.com' || u.id === '999999999') ? '' : `<button onclick="app.requestDeleteUser('${u.id}')" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+                    let editBtn = `<button onclick="app.openEditUserModal(${u.id})" class="text-blue-600 hover:text-blue-800 p-1 bg-blue-50 rounded mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>`;
+                    let delBtn = u.role === 'admin' ? '' : `<button onclick="app.requestDeleteUser(${u.id})" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
                     html += `<tr class="border-b hover:bg-slate-50"><td class="px-6 py-3 font-medium">${u.name}</td><td class="px-6 py-3">${u.email}</td><td class="px-6 py-3 capitalize">${roleStr}</td><td class="px-6 py-3 text-right whitespace-nowrap">${editBtn}${delBtn}</td></tr>`;
                 });
                 tbody.innerHTML = html;
@@ -893,54 +861,36 @@
                 e.preventDefault();
                 const name = document.getElementById('add-c-name').value;
                 const address = document.getElementById('add-c-address').value;
-                const startDate = document.getElementById('add-c-date').value;
+                const start_date = document.getElementById('add-c-date').value;
                 const frequency = document.getElementById('add-c-freq').value;
 
-                let newClient = { id: Date.now(), name, address, startDate, frequency };
+                const { data: newClient } = await supabase.from('clientes').insert({ name, address, start_date, frequency }).select();
+                const newClientId = newClient[0].id;
 
-                if (supabase) {
-                    const { data: newClientData, error: cErr } = await supabase.from('clientes').insert([{ name, address, startDate, frequency }]).select();
-                    if (cErr) return this.showToast('Error de conexión al crear cliente.', 'error');
-                    if(newClientData && newClientData.length > 0) newClient = newClientData[0];
-                }
-                
-                appDB.clients.push(newClient);
+                let baseDate = new Date(start_date + 'T12:00:00');
+                let count = frequency === 'Mensual' ? 12 : (frequency === 'Trimestral' ? 4 : (frequency === 'Semestral' ? 2 : 1));
+                let monthsToAdd = frequency === 'Mensual' ? 1 : (frequency === 'Trimestral' ? 3 : (frequency === 'Semestral' ? 6 : 12));
 
-                // Auto-programar agenda
-                let baseDate = new Date(newClient.startDate + 'T12:00:00');
-                let count = newClient.frequency === 'Mensual' ? 12 : (newClient.frequency === 'Trimestral' ? 4 : (newClient.frequency === 'Semestral' ? 2 : 1));
-                let monthsToAdd = newClient.frequency === 'Mensual' ? 1 : (newClient.frequency === 'Trimestral' ? 3 : (newClient.frequency === 'Semestral' ? 6 : 12));
-
-                let servicesToInsert = [];
+                const servicesToInsert = [];
                 for(let i=1; i<=count; i++) {
                     let nextDate = new Date(baseDate);
                     nextDate.setMonth(baseDate.getMonth() + (monthsToAdd * i));
                     servicesToInsert.push({
-                        clientId: newClient.id,
-                        eqId: null,
+                        clientId: newClientId,
                         date: nextDate.toISOString().split('T')[0],
-                        notes: `Sugerido: Mantenimiento ${newClient.frequency} (${i}/${count})`,
+                        notes: `Sugerido: Mantenimiento ${frequency} (${i}/${count})`,
                         status: 'pending',
                         reminderSent: false
                     });
                 }
+                await supabase.from('servicios').insert(servicesToInsert);
 
-                if (servicesToInsert.length > 0) {
-                    if (supabase) {
-                        const { data: sData } = await supabase.from('servicios').insert(servicesToInsert).select().catch(()=>({data:null}));
-                        if (sData) appDB.services.push(...sData);
-                    } else {
-                        servicesToInsert.forEach(s => { s.id = Date.now() + Math.random(); appDB.services.push(s); });
-                    }
-                }
-
-                this.renderClientsSelectors();
-                
+                await this.loadAllData();
                 const adminSel = document.getElementById('admin-client-selector');
-                if(adminSel) { adminSel.value = newClient.id; this.selectAdminClient(); }
+                if(adminSel) { adminSel.value = newClientId; this.selectAdminClient(); }
 
                 document.getElementById('modal-add-client').classList.add('hidden');
-                this.showToast('Cliente creado y fechas generadas.', 'success');
+                this.showToast('Cliente guardado y fechas generadas.', 'success');
                 e.target.reset();
             },
 
@@ -960,55 +910,29 @@
             saveEditClient: async function(e) {
                 e.preventDefault();
                 const id = parseInt(document.getElementById('edit-c-id').value);
-                const clientIndex = appDB.clients.findIndex(c => c.id === id);
+                const name = document.getElementById('edit-c-name').value;
+                const address = document.getElementById('edit-c-address').value;
+                const start_date = document.getElementById('edit-c-date').value;
+                const frequency = document.getElementById('edit-c-freq').value;
+
+                await supabase.from('clientes').update({ name, address, start_date, frequency }).eq('id', id);
+                await this.loadAllData();
+
+                const adminSel = document.getElementById('admin-client-selector');
+                if(adminSel) { adminSel.value = id; this.selectAdminClient(); }
                 
-                if(clientIndex > -1) {
-                    const payload = {
-                        name: document.getElementById('edit-c-name').value,
-                        address: document.getElementById('edit-c-address').value,
-                        startDate: document.getElementById('edit-c-date').value,
-                        frequency: document.getElementById('edit-c-freq').value
-                    };
-
-                    if (supabase) {
-                        const { error } = await supabase.from('clientes').update(payload).eq('id', id);
-                        if (error) return this.showToast('Falla de red.', 'error');
-                    }
-
-                    appDB.clients[clientIndex] = { ...appDB.clients[clientIndex], ...payload };
-                    
-                    this.renderClientsSelectors();
-                    const adminSel = document.getElementById('admin-client-selector');
-                    if(adminSel) { adminSel.value = id; this.selectAdminClient(); }
-                    
-                    document.getElementById('modal-edit-client').classList.add('hidden');
-                    this.showToast('Cliente actualizado.', 'success');
-                }
+                document.getElementById('modal-edit-client').classList.add('hidden');
+                this.showToast('Información del cliente actualizada.', 'success');
             },
 
             requestDeleteClient: function() {
                 if(!this.currentSelectedClientId) return;
-                this.openConfirmModal('⚠️ ¿Eliminar cliente? Se borrarán en cascada todos sus equipos, agenda, historial y cuentas. ESTO ES IRREVERSIBLE.', async () => {
-                    const id = this.currentSelectedClientId;
-                    
-                    if(supabase) {
-                        const { error } = await supabase.from('clientes').delete().eq('id', id);
-                        if (error) return this.showToast('Error de borrado en Supabase', 'error');
-                    }
-
-                    appDB.clients = appDB.clients.filter(c => c.id != id);
-                    appDB.equipments = appDB.equipments.filter(e => e.clientId != id);
-                    appDB.services = appDB.services.filter(s => s.clientId != id);
-                    appDB.users = appDB.users.filter(u => u.clientId != id);
-                    appDB.logs = appDB.logs.filter(l => l.clientId != id);
-                    
-                    this.renderClientsSelectors();
-                    this.renderUsersTable();
-                    
+                this.openConfirmModal('⚠️ ¿Eliminar cliente? Se borrarán en cascada todos sus equipos, agenda, historial de bitácoras y cuentas de usuario cliente. ESTO NO SE PUEDE DESHACER.', async () => {
+                    await supabase.from('clientes').delete().eq('id', this.currentSelectedClientId);
+                    await this.loadAllData();
                     const adminSel = document.getElementById('admin-client-selector');
                     if(adminSel) { adminSel.value = ""; this.selectAdminClient(); }
-                    
-                    this.showToast('Cliente eliminado.', 'success');
+                    this.showToast('Cliente y dependencias eliminados de la base de datos.', 'success');
                 });
             },
 
@@ -1080,29 +1004,22 @@
             saveEditService: async function(e) {
                 e.preventDefault();
                 const id = parseInt(document.getElementById('edit-s-id').value);
-                const sIndex = appDB.services.findIndex(x => x.id === id);
-                if(sIndex > -1) {
-                    const payload = {
-                        date: document.getElementById('edit-s-date').value,
-                        notes: document.getElementById('edit-s-notes').value
-                    };
+                const date = document.getElementById('edit-s-date').value;
+                const notes = document.getElementById('edit-s-notes').value;
+                
+                await supabase.from('servicios').update({ date, notes }).eq('id', id);
+                await this.loadAllData();
 
-                    if(supabase) {
-                        const { error } = await supabase.from('servicios').update(payload).eq('id', id);
-                        if (error) return this.showToast('No se pudo modificar la cita.', 'error');
-                    }
-
-                    appDB.services[sIndex] = { ...appDB.services[sIndex], ...payload };
-                    document.getElementById('modal-edit-service').classList.add('hidden');
-                    this.showToast('Fecha reprogramada.', 'success');
-                    this.renderClientServices('admin-alarms-list', appDB.services[sIndex].clientId, true);
-                }
+                document.getElementById('modal-edit-service').classList.add('hidden');
+                this.showToast('Fecha reprogramada correctamente.', 'success');
+                const s = appDB.services.find(x => x.id === id);
+                if (s) this.renderClientServices('admin-alarms-list', s.clientId, true);
             },
 
             saveScheduledService: async function(e) {
                 e.preventDefault();
                 const eqIdVal = document.getElementById('schedule-eq-id').value;
-                const payload = {
+                const newService = {
                     clientId: parseInt(this.currentSelectedClientId),
                     eqId: eqIdVal ? parseInt(eqIdVal) : null,
                     date: document.getElementById('schedule-date').value,
@@ -1110,30 +1027,19 @@
                     status: 'pending',
                     reminderSent: false
                 };
-                
-                if(supabase) {
-                    const { data, error } = await supabase.from('servicios').insert([payload]).select();
-                    if (error) return this.showToast('Falla al crear programación', 'error');
-                    if(data && data.length > 0) appDB.services.push(data[0]);
-                } else {
-                    appDB.services.push({ id: Date.now(), ...payload });
-                }
-
+                await supabase.from('servicios').insert(newService);
+                await this.loadAllData();
                 document.getElementById('modal-schedule-service').classList.add('hidden');
                 this.showToast('Servicio programado.', 'success');
                 this.renderClientServices('admin-alarms-list', this.currentSelectedClientId, true);
             },
             
             requestDeleteService: function(serviceId) {
-                this.openConfirmModal('⚠️ ¿Está seguro de eliminar esta cita de la agenda?', async () => {
+                this.openConfirmModal('⚠️ ¿Está seguro de eliminar esta fecha programada de la agenda?', async () => {
                     const service = appDB.services.find(s => s.id === serviceId);
                     if(service) {
-                        if(supabase) {
-                            const { error } = await supabase.from('servicios').delete().eq('id', serviceId);
-                            if (error) return this.showToast('Fallo al limpiar en Supabase', 'error');
-                        }
-
-                        appDB.services = appDB.services.filter(s => s.id !== serviceId);
+                        await supabase.from('servicios').delete().eq('id', serviceId);
+                        await this.loadAllData();
                         this.showToast('Fecha eliminada de la agenda.', 'success');
                         this.renderClientServices('admin-alarms-list', service.clientId, true);
                     }
@@ -1157,13 +1063,12 @@
                     if(eqInfo) bodyText += `\nAtención requerida al Equipo: ${eqInfo.unitId} (${eqInfo.type})\n`;
                     bodyText += `\nSaludos cordiales,\nBisonte Ingeniería.`;
                     
-                    window.location.href = `mailto:${allEmails}?subject=${subject}&body=${bodyText}`;
+                    const body = encodeURIComponent(bodyText);
+                    window.location.href = `mailto:${allEmails}?subject=${subject}&body=${body}`;
                     
-                    if(supabase) {
-                        await supabase.from('servicios').update({ reminderSent: true }).eq('id', serviceId);
-                    }
-                    service.reminderSent = true;
-                    this.showToast('¡Recordatorio marcado como enviado!', 'success');
+                    await supabase.from('servicios').update({ reminderSent: true }).eq('id', serviceId);
+                    await this.loadAllData();
+                    this.showToast('¡Recordatorio preparado y marcado como enviado!', 'success');
                     this.renderClientServices('admin-alarms-list', service.clientId, true);
                 }
             },
@@ -1171,7 +1076,7 @@
             renderClientServices: function(containerId, clientId, isAdmin) {
                 const container = document.getElementById(containerId);
                 const services = appDB.services.filter(s => s.clientId == clientId).sort((a,b) => new Date(a.date) - new Date(b.date));
-                if (services.length === 0) return container.innerHTML = '<p class="text-sm text-slate-500">Sin servicios programados.</p>';
+                if (services.length === 0) return container.innerHTML = '<p class="text-sm text-slate-500">Sin servicios.</p>';
                 
                 let html = '';
                 services.forEach(s => {
@@ -1210,10 +1115,9 @@
 
             saveEquipment: async function(e) {
                 e.preventDefault();
-                const payload = {
-                    clientId: parseInt(this.currentSelectedClientId),
-                    unitId: document.getElementById('add-eq-unitId').value,
-                    key: document.getElementById('add-eq-key').value,
+                const newEq = {
+                    client_id: parseInt(this.currentSelectedClientId),
+                    unit_id: document.getElementById('add-eq-unitId').value,
                     type: document.getElementById('add-eq-type').value,
                     brand: document.getElementById('add-eq-brand').value,
                     location: document.getElementById('add-eq-location').value,
@@ -1221,21 +1125,13 @@
                     gas: document.getElementById('add-eq-gas').value,
                     itm: document.getElementById('add-eq-itm').value,
                     polos: document.getElementById('add-eq-polos').value,
-                    status: 'Operativo',
-                    lastPreventiveDate: null,
-                    correctiveDetails: null
+                    status: 'Operativo'
                 };
                 
-                if(supabase) {
-                    const { data, error } = await supabase.from('equipos').insert([payload]).select();
-                    if(error) return this.showToast('Error publicando en Supabase', 'error');
-                    if(data && data.length > 0) appDB.equipments.push(data[0]);
-                } else {
-                    appDB.equipments.push({id: Date.now(), ...payload});
-                }
-                
+                await supabase.from('equipos').insert(newEq);
+                await this.loadAllData();
                 document.getElementById('modal-add-eq').classList.add('hidden');
-                this.showToast('Equipo añadido con éxito.', 'success');
+                this.showToast('Ficha técnica de equipo creada exitosamente.', 'success');
                 e.target.reset();
                 
                 const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
@@ -1247,7 +1143,6 @@
                 if(eq) {
                     document.getElementById('edit-eq-id').value = eq.id;
                     document.getElementById('edit-eq-unitId').value = eq.unitId;
-                    document.getElementById('edit-eq-key').value = eq.key;
                     document.getElementById('edit-eq-type').value = eq.type;
                     document.getElementById('edit-eq-brand').value = eq.brand;
                     document.getElementById('edit-eq-location').value = eq.location;
@@ -1262,47 +1157,33 @@
             saveEditEquipment: async function(e) {
                 e.preventDefault();
                 const id = parseInt(document.getElementById('edit-eq-id').value);
-                const eqIndex = appDB.equipments.findIndex(e => e.id === id);
-                if(eqIndex > -1) {
-                    const payload = {
-                        unitId: document.getElementById('edit-eq-unitId').value,
-                        key: document.getElementById('edit-eq-key').value,
-                        type: document.getElementById('edit-eq-type').value,
-                        brand: document.getElementById('edit-eq-brand').value,
-                        location: document.getElementById('edit-eq-location').value,
-                        capacity: document.getElementById('edit-eq-capacity').value,
-                        gas: document.getElementById('edit-eq-gas').value,
-                        itm: document.getElementById('edit-eq-itm').value,
-                        polos: document.getElementById('edit-eq-polos').value
-                    };
-
-                    if(supabase) {
-                        const { error } = await supabase.from('equipos').update(payload).eq('id', id);
-                        if(error) return this.showToast('Error en red.', 'error');
-                    }
-
-                    appDB.equipments[eqIndex] = { ...appDB.equipments[eqIndex], ...payload };
-                    
-                    document.getElementById('modal-edit-eq').classList.add('hidden');
-                    this.showToast('Equipo actualizado.', 'success');
-                    const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
-                    this.updateClientUI(isTechView ? 'tech' : 'admin', appDB.equipments[eqIndex].clientId);
-                }
+                const updates = {
+                    unit_id: document.getElementById('edit-eq-unitId').value,
+                    type: document.getElementById('edit-eq-type').value,
+                    brand: document.getElementById('edit-eq-brand').value,
+                    location: document.getElementById('edit-eq-location').value,
+                    capacity: document.getElementById('edit-eq-capacity').value,
+                    gas: document.getElementById('edit-eq-gas').value,
+                    itm: document.getElementById('edit-eq-itm').value,
+                    polos: document.getElementById('edit-eq-polos').value
+                };
+                
+                await supabase.from('equipos').update(updates).eq('id', id);
+                await this.loadAllData();
+                document.getElementById('modal-edit-eq').classList.add('hidden');
+                this.showToast('Información base del equipo actualizada.', 'success');
+                const eq = appDB.equipments.find(e => e.id === id);
+                const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
+                this.updateClientUI(isTechView ? 'tech' : 'admin', eq.clientId);
             },
 
             requestDeleteEquipment: function(eqId) {
                 this.openConfirmModal('⚠️ ¿Eliminar este equipo de forma permanente? Se borrarán sus bitácoras e historial asociados.', async () => {
                     const eq = appDB.equipments.find(e => e.id === eqId);
                     if(eq) {
-                        if(supabase) {
-                            const { error } = await supabase.from('equipos').delete().eq('id', eqId);
-                            if(error) return this.showToast('Problema al borrar servidor.', 'error');
-                        }
-
-                        appDB.equipments = appDB.equipments.filter(e => e.id !== eqId);
-                        appDB.logs = appDB.logs.filter(l => l.eqId !== eqId);
-                        
-                        this.showToast('Equipo borrado.', 'success');
+                        await supabase.from('equipos').delete().eq('id', eqId);
+                        await this.loadAllData();
+                        this.showToast('Equipo e historial eliminados.', 'success');
                         const isTechView = !document.getElementById('view-tech-home').classList.contains('hidden-view');
                         this.updateClientUI(isTechView ? 'tech' : 'admin', eq.clientId);
                     }
@@ -1333,7 +1214,7 @@
                 document.getElementById('tf-eq-id').value = eq.id;
                 
                 document.getElementById('tf-display-id').textContent = eq.unitId;
-                document.getElementById('tf-display-key').textContent = eq.key || 'N/A';
+                document.getElementById('tf-display-key').textContent = eq.unitId || 'N/A';
                 document.getElementById('tf-display-brand').textContent = `${eq.type} / ${eq.brand}`;
                 document.getElementById('tf-display-cap').textContent = eq.capacity;
                 document.getElementById('tf-display-loc').textContent = eq.location;
@@ -1341,6 +1222,7 @@
                 document.getElementById('tf-display-itm').textContent = `${eq.itm || '--'}A`;
                 document.getElementById('tf-display-polos').textContent = eq.polos || '1';
                 
+                // Limpiar previsualizaciones de fotos
                 ['before', 'during', 'after'].forEach(p => {
                     document.getElementById(`img-preview-${p}`).classList.add('hidden');
                     document.getElementById(`img-preview-${p}`).src = '';
@@ -1363,7 +1245,7 @@
                 const container = document.getElementById('history-list-container');
                 
                 if(logs.length === 0) {
-                    container.innerHTML = `<div class="text-center py-10 text-slate-400"><i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-2 opacity-50"></i><p>El equipo no tiene bitácoras registradas.</p></div>`;
+                    container.innerHTML = `<div class="text-center py-10 text-slate-400"><i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-2 opacity-50"></i><p>El equipo no tiene bitácoras registradas aún en el historial.</p></div>`;
                 } else {
                     let html = `<div class="space-y-4">`;
                     logs.forEach(l => {
@@ -1399,6 +1281,7 @@
                 lucide.createIcons();
             },
 
+            // Compresión de fotos para guardar Base64 como Text en Supabase (tal y como en el original)
             previewImage: function(event, imgId, containerId) {
                 const file = event.target.files[0];
                 if (file) {
@@ -1438,68 +1321,42 @@
             submitTechForm: async function(e) {
                 e.preventDefault();
                 const eqId = parseInt(document.getElementById('tf-eq-id').value);
-                const eqIndex = appDB.equipments.findIndex(e => e.id === eqId);
-                const eq = appDB.equipments[eqIndex];
-                
-                const now = new Date();
-                const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+                const eq = appDB.equipments.find(e => e.id === eqId);
 
                 const getImg = (id) => {
                     const img = document.getElementById(id);
                     return img.classList.contains('hidden') ? null : img.src;
                 };
 
-                const logPayload = {
-                    eqId: eq.id,
-                    clientId: eq.clientId,
-                    techName: this.currentUser.displayName,
-                    date: dateStr,
-                    time: now.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}),
-                    techComments: document.getElementById('tf-tech-comments').value,
-                    photos: {
-                        before: getImg('img-preview-before'),
-                        during: getImg('img-preview-during'),
-                        after: getImg('img-preview-after')
-                    },
-                    data: {
-                        volts: document.getElementById('tf-volts').value,
-                        amps: document.getElementById('tf-amps').value,
-                        psi: document.getElementById('tf-psi').value,
-                        temp: document.getElementById('tf-temp').value
-                    },
-                    components: Array.from(document.querySelectorAll('#components-list tr')).map(tr => ({
+                const logEntry = {
+                    eq_id: eq.id.toString(),
+                    client_id: eq.clientId,
+                    tech_name: this.currentUser.displayName,
+                    volts: parseFloat(document.getElementById('tf-volts').value),
+                    amps: parseFloat(document.getElementById('tf-amps').value),
+                    psi: parseFloat(document.getElementById('tf-psi').value),
+                    temp: parseFloat(document.getElementById('tf-temp').value),
+                    components_json: Array.from(document.querySelectorAll('#components-list tr')).map(tr => ({
                         name: tr.getAttribute('data-comp'),
                         status: tr.querySelector('.comp-status').value,
                         obs: tr.querySelector('.comp-obs').value
                     })),
-                    needsCorrective: document.getElementById('tf-needs-corrective').checked,
-                    correctiveDetails: document.getElementById('tf-corrective-details').value
+                    tech_comments: document.getElementById('tf-tech-comments').value,
+                    needs_corrective: document.getElementById('tf-needs-corrective').checked,
+                    corrective_details: document.getElementById('tf-corrective-details').value,
+                    foto_before: getImg('img-preview-before'),
+                    foto_during: getImg('img-preview-during'),
+                    foto_after: getImg('img-preview-after')
                 };
 
-                if(supabase) {
-                    const { data: logData, error: logErr } = await supabase.from('bitacoras').insert([logPayload]).select();
-                    if(logErr) return this.showToast('Error transmitiendo bitácora', 'error');
-                    if(logData && logData.length > 0) appDB.logs.push(logData[0]);
-                } else {
-                    appDB.logs.push({id: Date.now(), ...logPayload});
-                }
+                // Actualizar estatus del equipo en cascada
+                const newStatus = logEntry.needs_corrective ? 'Requiere Correctivo' : 'Operativo';
+                await supabase.from('equipos').update({ status: newStatus }).eq('id', eq.id);
 
-                const newStatus = logPayload.needsCorrective ? 'Requiere Correctivo' : 'Operativo';
-                const newCorrective = logPayload.needsCorrective ? logPayload.correctiveDetails : null;
+                await supabase.from('bitacoras').insert(logEntry);
                 
-                if(supabase) {
-                    await supabase.from('equipos').update({
-                        lastPreventiveDate: dateStr,
-                        status: newStatus,
-                        correctiveDetails: newCorrective
-                    }).eq('id', eq.id);
-                }
-
-                appDB.equipments[eqIndex].lastPreventiveDate = dateStr;
-                appDB.equipments[eqIndex].status = newStatus;
-                appDB.equipments[eqIndex].correctiveDetails = newCorrective;
-
-                this.showToast('Bitácora sincronizada.', 'success');
+                await this.loadAllData();
+                this.showToast('Bitácora guardada en el historial general.', 'success');
                 this.switchView('tech-home');
                 this.updateClientUI('tech', eq.clientId);
             },
@@ -1520,7 +1377,7 @@
                             <td class="px-4 py-3"><span class="font-bold block">${eq.unitId}</span><span class="text-[10px] text-slate-500">${eq.type} ${eq.brand}</span></td>
                             <td class="px-4 py-3 text-xs">${eq.location}</td>
                             <td class="px-4 py-3 text-xs">${eq.lastPreventiveDate||'N/A'}</td>
-                            <td class="px-4 py-3 text-xs text-red-600 max-w-[150px] truncate" title="${eq.correctiveDetails||''}">${eq.correctiveDetails||''}</td>
+                            <td class="px-4 py-3 text-xs text-red-600 max-w-[150px] truncate"></td>
                             <td class="px-4 py-3 text-right">
                                 <div class="flex flex-col items-end gap-1">
                                     ${statusHtml}
@@ -1536,9 +1393,9 @@
                         </tr>`;
                     } else if (mode === 'tech') {
                         html += `<tr class="border-b hover:bg-slate-50">
-                            <td class="px-4 py-3"><span class="font-bold block text-slate-700">${eq.unitId}</span><span class="text-[10px] text-slate-400">${eq.key}</span></td>
+                            <td class="px-4 py-3"><span class="font-bold block text-slate-700">${eq.unitId}</span></td>
                             <td class="px-4 py-3"><span class="font-medium text-slate-600 block text-xs">${eq.type}</span><span class="text-[10px] text-slate-400">${eq.brand}</span></td>
-                            <td class="px-4 py-3 text-xs text-slate-600">${eq.location}<br><span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-1 mt-1 inline-block rounded">${eq.gas} | ${eq.itm}A (${eq.polos}P)</span></td>
+                            <td class="px-4 py-3 text-xs text-slate-600">${eq.location}<br><span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-1 mt-1 inline-block rounded">${eq.gas || '-'} | ${eq.itm || '-'}A (${eq.polos}P)</span></td>
                             <td class="px-4 py-3">${statusHtml}</td>
                             <td class="px-4 py-3 text-right min-w-[130px]">
                                 <div class="flex flex-col gap-1">
@@ -1589,6 +1446,7 @@
                 this.renderLogsTable(clientId, 'client-dash');
             },
 
+            // --- IMPRESIÓN (PDF NATIVO) FORMATO COMPACTO 1 HOJA POR EQUIPO ---
             printClientDashboard: function() {
                 const clientId = this.currentSelectedClientId;
                 const client = appDB.clients.find(c => c.id == clientId);
@@ -1731,6 +1589,7 @@
                 window.print();
             },
 
+            // --- UI UTILS ---
             showToast: function(message, type = 'info') {
                 const container = document.getElementById('toast-container');
                 const toast = document.createElement('div');
@@ -1738,7 +1597,7 @@
                 toast.innerHTML = `<i data-lucide="info" class="w-5 h-5"></i><span>${message}</span>`;
                 container.appendChild(toast);
                 lucide.createIcons({root: toast});
-                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 5000);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
             }
         };
 
