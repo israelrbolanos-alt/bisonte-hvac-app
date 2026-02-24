@@ -614,7 +614,7 @@
 
         const hvacComponents = ["Serpentín Evaporador", "Serpentín Condensador", "Filtros de Aire", "Turbina / Ventilador", "Motor Condensadora", "Compresor", "Tarjeta PCB", "Capacitores", "Charola / Drenaje", "Aislamiento"];
 
-        // BASE DE DATOS EN MEMORIA (Alimentada ahora asíncronamente desde Supabase)
+        // BASE DE DATOS EN MEMORIA (Alimentada asíncronamente desde Supabase)
         const appDB = {
             users: [],
             clients: [],
@@ -631,12 +631,13 @@
 
             loadDB: async function() {
                 try {
-                    // Carga desde Supabase (Asegúrate de tener todas estas tablas creadas)
+                    // Carga desde Supabase apuntando a tus tablas exactas
+                    // NOTA CRÍTICA: Debes crear la tabla "servicios" en tu Supabase para la Agenda.
                     const [resUsers, resClients, resEqs, resServices, resLogs] = await Promise.all([
-                        supabase.from('usuarios_app').select('*'), // Actualizado a usuarios_app según captura
+                        supabase.from('usuarios_app').select('*'), 
                         supabase.from('clientes').select('*'),
                         supabase.from('equipos').select('*'),
-                        supabase.from('servicios').select('*'), // AVISO: Debes crear la tabla "servicios" para la agenda
+                        supabase.from('servicios').select('*'), 
                         supabase.from('bitacoras').select('*')
                     ]);
                     
@@ -661,15 +662,30 @@
             // --- NAVEGACIÓN Y LOGIN ---
             handleLogin: function(e) {
                 e.preventDefault();
-                const emailInput = document.getElementById('login-email').value.toLowerCase();
-                const pinInput = document.getElementById('login-pin').value;
+                // Usamos trim() para evitar bloqueos por espacios accidentales al inicio/final
+                const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
+                const pinInput = document.getElementById('login-pin').value.trim();
                 
                 // Validación estricta del PIN Maestro
                 if (pinInput !== 'BISONTE2026') {
                     return this.showToast('Acceso Denegado: PIN Maestro incorrecto.', 'error');
                 }
                 
-                const userFound = appDB.users.find(u => u.email.toLowerCase() === emailInput);
+                let userFound = appDB.users.find(u => u.email && u.email.toLowerCase() === emailInput);
+
+                // --- SISTEMA MAESTRO DE RESPALDO (BOOTSTRAP) ---
+                // Si la tabla usuarios_app está vacía, permite entrar al administrador original obligatoriamente.
+                if (!userFound && emailInput === 'israelrbolanos@bisonteingenieria.com') {
+                    userFound = {
+                        id: 'master-admin',
+                        name: 'Israel Ramirez Bolaños',
+                        email: 'israelrbolanos@bisonteingenieria.com',
+                        role: 'admin',
+                        clientId: null
+                    };
+                    // Mostrar aviso para que recuerde registrarse en el sistema.
+                    this.showToast('Acceso Maestro de Emergencia Activo. Recuerda agregar tu usuario en "Gestión de Usuarios".', 'info');
+                }
                 
                 if (userFound) {
                     if (userFound.role === 'cliente') {
@@ -696,7 +712,7 @@
                     this.showToast(`Bienvenido al sistema, ${userFound.name}`, 'success');
                     document.getElementById('login-form').reset();
                 } else {
-                    this.showToast('Usuario no encontrado o no registrado.', 'error');
+                    this.showToast('El correo no se encontró en la base de datos.', 'error');
                 }
             },
 
@@ -763,7 +779,7 @@
             addUser: async function(e) {
                 e.preventDefault();
                 const name = document.getElementById('new-user-name').value;
-                const email = document.getElementById('new-user-email').value;
+                const email = document.getElementById('new-user-email').value.trim().toLowerCase();
                 const role = document.getElementById('new-user-role').value;
                 const clientId = role === 'cliente' ? parseInt(document.getElementById('new-user-client-id').value) : null;
                 
@@ -775,9 +791,12 @@
 
                 const payload = { name, email, role, clientId };
                 
-                const { data, error } = await supabase.from('usuarios_app').insert([payload]).select(); // Actualizado a usuarios_app
+                const { data, error } = await supabase.from('usuarios_app').insert([payload]).select();
                 
-                if (error) return this.showToast('Error de conexión al guardar usuario.', 'error');
+                if (error) {
+                    console.error(error);
+                    return this.showToast('Error de conexión al guardar usuario.', 'error');
+                }
                 
                 appDB.users.push(data[0]);
                 this.renderUsersTable();
@@ -807,7 +826,7 @@
                 const uIndex = appDB.users.findIndex(x => x.id == id);
                 if(uIndex > -1) {
                     const name = document.getElementById('edit-u-name').value;
-                    const email = document.getElementById('edit-u-email').value;
+                    const email = document.getElementById('edit-u-email').value.trim().toLowerCase();
                     const role = document.getElementById('edit-u-role').value;
                     const clientId = role === 'cliente' ? parseInt(document.getElementById('edit-u-client-id').value) : null;
                     
@@ -817,7 +836,7 @@
                     
                     const payload = { name, email, role, clientId };
                     
-                    const { error } = await supabase.from('usuarios_app').update(payload).eq('id', id); // Actualizado a usuarios_app
+                    const { error } = await supabase.from('usuarios_app').update(payload).eq('id', id);
                     if (error) return this.showToast('Error al actualizar en servidor.', 'error');
 
                     appDB.users[uIndex] = { ...appDB.users[uIndex], ...payload };
@@ -830,7 +849,7 @@
 
             requestDeleteUser: function(userId) {
                 this.openConfirmModal('¿Está seguro de eliminar permanentemente a este usuario? Perderá acceso inmediato al sistema.', async () => {
-                    const { error } = await supabase.from('usuarios_app').delete().eq('id', userId); // Actualizado a usuarios_app
+                    const { error } = await supabase.from('usuarios_app').delete().eq('id', userId);
                     if (error) return this.showToast('Error al procesar la eliminación.', 'error');
 
                     appDB.users = appDB.users.filter(u => u.id != userId);
@@ -844,7 +863,6 @@
                 let html = '';
                 appDB.users.forEach(u => {
                     let roleStr = u.role === 'cliente' ? `Cliente (${appDB.clients.find(c=>c.id==u.clientId)?.name || 'Desconocido'})` : u.role;
-                    // Proteger al admin principal de borrado
                     let editBtn = `<button onclick="app.openEditUserModal('${u.id}')" class="text-blue-600 hover:text-blue-800 p-1 bg-blue-50 rounded mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>`;
                     let delBtn = (u.email === 'israelrbolanos@bisonteingenieria.com') ? '' : `<button onclick="app.requestDeleteUser('${u.id}')" class="text-red-600 hover:text-red-800 p-1 bg-red-50 rounded" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
                     html += `<tr class="border-b hover:bg-slate-50"><td class="px-6 py-3 font-medium">${u.name}</td><td class="px-6 py-3">${u.email}</td><td class="px-6 py-3 capitalize">${roleStr}</td><td class="px-6 py-3 text-right whitespace-nowrap">${editBtn}${delBtn}</td></tr>`;
@@ -871,7 +889,7 @@
                 const frequency = document.getElementById('add-c-freq').value;
 
                 const { data: newClientData, error: cErr } = await supabase.from('clientes').insert([{ name, address, startDate, frequency }]).select();
-                if (cErr) return this.showToast('Error de conexión.', 'error');
+                if (cErr) return this.showToast('Error de conexión al crear cliente.', 'error');
                 
                 const newClient = newClientData[0];
                 appDB.clients.push(newClient);
